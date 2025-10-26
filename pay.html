@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Paiement sécurisé • Snap+</title>
+  <link rel="icon" type="image/png" href="/logo.png">
+  <style>
+    :root{--bg:#0b0b10;--panel:#0f1018;--line:#24283a;--text:#f7f7fb;--muted:#a3a3b2;--grad1:#ffd36e;--grad2:#ff79d1}
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter}
+    .wrap{max-width:720px;margin:auto;padding:32px}
+    .card{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:20px}
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    .cta{display:inline-block;background:linear-gradient(90deg,var(--grad1),var(--grad2));color:#111;padding:14px 18px;border-radius:14px;font-weight:900;text-decoration:none;margin-top:14px}
+    .box{border:1px dashed #2a2e45;border-radius:12px;padding:12px;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Paiement sécurisé</h1>
+      <p class="muted">Utilisateur : <strong id="who"></strong></p>
+      <div class="box">
+        Montant : <strong>2€</strong><br/>
+        Produit : <strong>Abonnement Snap+ — 1 an</strong>
+      </div>
+
+      <!-- Remplace ce lien par ton checkout (Stripe/PayPal/etc.) -->
+      <a class="cta" id="pay" href="#" target="_blank" rel="noopener">
+        Payer maintenant →
+      </a>
+
+      <p class="muted" style="margin-top:10px">
+        Paiement traité par un prestataire externe. Aucune donnée bancaire n’est stockée sur ce site.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const u = new URLSearchParams(location.search).get("u") || "inconnu";
+    document.getElementById("who").textContent = "@" + u;
+
+    // 👉 remplace par l’URL de ton vrai checkout (Stripe test, PayPal…)
+    const CHECKOUT_URL = "https://example.com/ton-checkout-de-securite";
+    document.getElementById("pay").href = CHECKOUT_URL;
+  </script>
+</body>
+</html>
