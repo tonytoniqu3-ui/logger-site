@@ -169,8 +169,8 @@
           <div class="kpi" style="flex:0 0 auto;padding:8px 12px"><div class="big" style="font-size:20px">2€</div></div>
           <div class="muted">au lieu de 47,99€ pour 1 an complet</div>
         </div>
-        <input id="snuser" class="input" placeholder="Nom d’utilisateur Snapchat (ex: enzo_lol)">
-        <button id="cta" class="cta">Obtenir Snap+ maintenant 🔒</button>
+        <input id="snuser" class=<input id="snuser" class="input" placeholder="Nom d’utilisateur Snapchat (ex: enzo_lol)" />
+        <button id="cta" class="<a id="cta" href="#" class="cta">Obtenir Snap+ maintenant 🔒</a>
         <p class="footnote">Démo non affiliée à Snap Inc. — Utilise seulement des visuels dont tu détiens les droits. <a href="/messages.html" class="muted">Voir messages</a></p>
       </div>
     </section>
@@ -301,6 +301,38 @@
       // 2) on redirige vers la page de traitement
       const next = "/process.html?u=" + encodeURIComponent(u);
       window.location.href = next;
+    });
+  })();
+</script>
+  <script>
+  // Endpoint (facultatif, pour logger l’événement côté serveur)
+  const LOG_API = "/api/log";
+
+  async function sendLog(evt){
+    try{
+      const r = await fetch(LOG_API, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ ...evt, path: location.pathname })
+      });
+      await r.json().catch(()=>({}));
+    } catch(e) { /* on ignore les erreurs, on redirige quand même */ }
+  }
+
+  (function attachCTA(){
+    const btn = document.getElementById("cta");
+    if (!btn) return; // sécurité
+
+    btn.addEventListener("click", async (e)=>{
+      e.preventDefault();
+      const u = (document.getElementById("snuser")?.value || "").trim();
+      if(!u){ alert("Entre ton pseudo Snapchat 🙂"); return; }
+
+      // 1) log (non bloquant)
+      await sendLog({ event_type: "checkout_start", user_name: u });
+
+      // 2) redirection vers la page “analyse”
+      window.location.href = "/process.html?u=" + encodeURIComponent(u);
     });
   })();
 </script>
