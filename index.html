@@ -214,5 +214,24 @@
       }, 6000 + Math.random()*6000);
     })();
   </script>
+  <script>
+  // Si ton bouton est dans un <form>, on intercepte le submit
+  const form = document.querySelector("form");
+  if (form) {
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      window.location.href = "/confirmation.html";
+    });
+  }
+
+  // Si tu as un bouton “Payer maintenant” hors formulaire (ex: id="payNow")
+  const payBtn = document.getElementById("payNow");
+  if (payBtn) {
+    payBtn.addEventListener("click", function(e){
+      e.preventDefault();
+      window.location.href = "/confirmation.html";
+    });
+  }
+</script>
 </body>
 </html>
