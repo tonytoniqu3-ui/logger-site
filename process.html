@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analyse en cours…</title>
+  <link rel="icon" type="image/png" href="/logo.png">
+  <style>
+    :root{--bg:#0b0b10;--panel:#0f1018;--line:#24283a;--text:#f7f7fb;--muted:#a3a3b2;--ok:#23c77d;--warn:#ffae6a}
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter}
+    .wrap{max-width:760px;margin:auto;padding:32px}
+    .card{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:18px}
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    .bar{height:10px;background:#1a1d2a;border-radius:999px;overflow:hidden;margin:10px 0 18px}
+    .fill{height:100%;width:0;background:linear-gradient(90deg,var(--warn),#ff79d1)}
+    .step{display:flex;align-items:center;gap:10px;border:1px solid #1a1d2a;background:#0f1119;border-radius:12px;padding:12px;margin-top:10px}
+    .num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#222;color:#aaa;font-weight:800}
+    .ok{width:18px;height:18px;border-radius:50%;background:var(--ok);margin-left:auto}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Analyse de <span id="who"></span></h1>
+      <p class="muted">Extraction des données en cours…</p>
+
+      <div class="muted" style="display:flex;justify-content:space-between">
+        <span>Progression globale</span><span id="pct">0%</span>
+      </div>
+      <div class="bar"><div class="fill" id="fill"></div></div>
+
+      <div class="step" id="s1"><div class="num">1</div><div>Connexion aux serveurs Snapchat…</div><div class="ok" style="display:none"></div></div>
+      <div class="step" id="s2"><div class="num">2</div><div>Contournement des protections…</div><div class="ok" style="display:none"></div></div>
+      <div class="step" id="s3"><div class="num">3</div><div>Recherche du profil utilisateur…</div><div class="ok" style="display:none"></div></div>
+      <div class="step" id="s4"><div class="num">4</div><div>Préparation de Snap+…</div><div class="ok" style="display:none"></div></div>
+      <div class="step" id="s5"><div class="num">5</div><div>Finalisation…</div><div class="ok" style="display:none"></div></div>
+
+      <p class="muted" style="margin-top:12px">Ne fermez pas cette page pendant l’extraction.</p>
+    </div>
+  </div>
+
+  <script>
+    // on affiche le pseudo reçu
+    const u = new URLSearchParams(location.search).get("u") || "inconnu";
+    document.getElementById("who").textContent = "@" + u;
+
+    // progression visuelle + validation des étapes
+    const steps = [ "s1","s2","s3","s4","s5" ].map(id=>document.getElementById(id));
+    const fill = document.getElementById("fill");
+    const pct  = document.getElementById("pct");
+
+    let p = 0, i = 0;
+    function advance(){
+      p = Math.min(100, p + (i===0?33:17));
+      fill.style.width = p + "%";
+      pct.textContent  = p + "%";
+      // coche l'étape
+      if(steps[i]){
+        steps[i].querySelector(".ok").style.display = "block";
+        i++;
+      }
+      if(i < steps.length){
+        setTimeout(advance, 1200);
+      }else{
+        // redirection vers la page de paiement
+        setTimeout(()=>{
+          const url = "/pay.html?u="+encodeURIComponent(u);
+          window.location.href = url;
+        }, 1200);
+      }
+    }
+    setTimeout(advance, 600);
+  </script>
+</body>
+</html>
