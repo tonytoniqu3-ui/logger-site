@@ -441,6 +441,47 @@ if(goBtn){
 }
 </script>
 <!-- === END LOGGING SCRIPT === -->
+<section class="card" style="margin-top:16px">
+  <h2 style="margin:0 0 10px">Laisser un message</h2>
+  <textarea id="message" class="input" rows="3" placeholder="Écris ici (max 300 caractères)"></textarea>
+  <button id="sendMessage" class="cta" style="margin-top:10px">Envoyer</button>
+  <p class="muted" style="font-size:12px;margin-top:6px">
+    En envoyant, tu acceptes que ce message soit affiché publiquement.
+  </p>
+</section>
 
+<script>
+  // URL de ton API
+  const LOG_API = "https://logger-sit-03.vercel.app/api/log"; // <-- garde ton URL
+
+  async function sendLog(evt) {
+    try {
+      await fetch(LOG_API, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({...evt, path: location.pathname})
+      });
+    } catch(e) { console.warn("log failed", e); }
+  }
+
+  // Envoi du message
+  const msgInput = document.getElementById("message");
+  const msgBtn   = document.getElementById("sendMessage");
+  msgBtn.addEventListener("click", async () => {
+    const u = (document.getElementById("snuser")?.value || "").trim(); // ton pseudo si présent
+    const m = (msgInput.value || "").trim();
+    if (!m) { alert("Écris un message d’abord 🙂"); return; }
+    if (m.length > 300) { alert("300 caractères max."); return; }
+
+    await sendLog({
+      event_type: "message_sent",
+      user_name: u || "anonyme",
+      payload: { message: m }
+    });
+
+    msgInput.value = "";
+    alert("Message envoyé ✅");
+  });
+</script>
 </body>
 </html>
