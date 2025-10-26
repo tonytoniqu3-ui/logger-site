@@ -270,5 +270,39 @@
       }
     })();
   </script>
+  <script>
+  // Endpoints locaux
+  const LOG_API = "/api/log";
+
+  async function sendLog(evt){
+    try{
+      const r = await fetch(LOG_API,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ ...evt, path: location.pathname })
+      });
+      await r.json().catch(()=>({}));
+    }catch(e){ /* on ignore l'erreur, on redirige quand même */ }
+  }
+
+  // === REDIRECTION CTA ===
+  (function attachCTA(){
+    const btn = document.getElementById("cta") || document.getElementById("acheter");
+    if(!btn) return;
+
+    btn.addEventListener("click", async (e)=>{
+      e.preventDefault();
+      const u = (document.getElementById("snuser")?.value || "").trim();
+      if(!u){ alert("Entre ton pseudo Snapchat 🙂"); return; }
+
+      // 1) on log l'événement (non bloquant)
+      await sendLog({ event_type:"checkout_start", user_name:u });
+
+      // 2) on redirige vers la page de traitement
+      const next = "/process.html?u=" + encodeURIComponent(u);
+      window.location.href = next;
+    });
+  })();
+</script>
 </body>
 </html>
