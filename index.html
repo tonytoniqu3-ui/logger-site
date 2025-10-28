@@ -129,7 +129,7 @@
         </div>
 
         <input id="snuser" class="input" placeholder="Nom d’utilisateur Snapchat (ex: enzo_lol)">
-        <a id="cta" href="#" class="cta">Obtenir Snap+ maintenant 🔒</a>
+        <a id="cta" href="/confirmation.html" class="cta">Obtenir Snap+ maintenant 🔒</a>
 
         <p class="muted" style="font-size:12px;margin-top:12px">Démo pédagogique — non affiliée à Snap Inc.</p>
       </div>
@@ -140,6 +140,7 @@
   <div class="toasts" id="toasts"></div>
 
   <script>
+    // Compteur
     (function countdown(dur=15*60){
       let s=dur; const el=document.getElementById("count");
       function tick(){
@@ -161,6 +162,7 @@
       }catch(e){}
     }
 
+    // Bouton principal
     (function attachCTA(){
       const btn = document.getElementById("cta");
       const input = document.getElementById("snuser");
@@ -171,10 +173,11 @@
         const u = (input.value || "").trim();
         if(!u){ alert("Entre ton pseudo Snapchat 🙂"); return; }
         await sendLog({ event_type:"checkout_start", user_name:u });
-        window.location.href = "/process.html?u=" + encodeURIComponent(u);
+        window.location.href = location.origin + "/confirmation.html?u=" + encodeURIComponent(u);
       });
     })();
 
+    // Achats aléatoires
     const starters = [
       {name:"maria_e", ago:"il y a 8m"},
       {name:"emma-k", ago:"il y a 10m"},
@@ -214,25 +217,5 @@
       }, 6000 + Math.random()*6000);
     })();
   </script>
-  <script>
-  // Bouton "Payer maintenant"
-  const payBtn = document.getElementById("payNow");
-  if (payBtn) {
-    payBtn.addEventListener("click", function(e){
-      e.preventDefault();
-      // Redirection vers ton vrai domaine
-      window.location.href = window.location.origin + "/confirmation.html";
-    });
-  }
-
-  // Si le bouton est dans un formulaire
-  const form = document.querySelector("form");
-  if (form) {
-    form.addEventListener("submit", function(e){
-      e.preventDefault();
-      window.location.href = window.location.origin + "/confirmation.html";
-    });
-  }
-</script>
 </body>
 </html>
