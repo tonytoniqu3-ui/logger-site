@@ -1,77 +1,71 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Analyse en cours…</title>
-  <link rel="icon" type="image/png" href="/logo.png">
   <style>
-    :root{--bg:#0b0b10;--panel:#0f1018;--line:#24283a;--text:#f7f7fb;--muted:#a3a3b2;--ok:#23c77d;--warn:#ffae6a}
-    *{box-sizing:border-box}
-    html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter}
-    .wrap{max-width:760px;margin:auto;padding:32px}
-    .card{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:18px}
-    h1{margin:0 0 8px}
-    .muted{color:var(--muted)}
-    .bar{height:10px;background:#1a1d2a;border-radius:999px;overflow:hidden;margin:10px 0 18px}
-    .fill{height:100%;width:0;background:linear-gradient(90deg,var(--warn),#ff79d1)}
-    .step{display:flex;align-items:center;gap:10px;border:1px solid #1a1d2a;background:#0f1119;border-radius:12px;padding:12px;margin-top:10px}
-    .num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#222;color:#aaa;font-weight:800}
-    .ok{width:18px;height:18px;border-radius:50%;background:var(--ok);margin-left:auto}
+    body{margin:0;background:#0b0b10;color:#f7f7fb;font:16px/1.55 system-ui,Segoe UI,Roboto;display:grid;place-items:center;min-height:100vh}
+    .card{width:min(820px,92vw);background:#0f1018;border:1px solid #24283a;border-radius:16px;padding:28px;box-shadow:0 10px 30px #0006}
+    h1{margin:0 0 6px;font-size:28px}
+    .muted{color:#a3a3b2}
+    .bar{height:8px;background:#1a1d2a;border-radius:999px;overflow:hidden;margin:12px 0 24px}
+    .bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd36e,#ff79d1)}
+    .step{display:flex;gap:14px;align-items:flex-start;background:#0d0e15;border:1px solid #24283a;border-radius:12px;padding:12px;margin:10px 0;opacity:.7}
+    .step.ok{opacity:1;border-color:#2c4f39;background:#0f1712}
+    .dot{width:24px;height:24px;border-radius:50%;background:#2a2d3a;display:grid;place-items:center;font-weight:700}
+    .ok .dot{background:#23c77d}
+    .cta{display:inline-block;margin-top:18px;background:#ffd36e;color:#212127;padding:12px 16px;border-radius:10px;font-weight:800;text-decoration:none}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>Analyse de <span id="who"></span></h1>
-      <p class="muted">Extraction des données en cours…</p>
+  <div class="card">
+    <h1>Analyse de <span id="who">@…</span></h1>
+    <p class="muted">Extraction des données en cours…</p>
 
-      <div class="muted" style="display:flex;justify-content:space-between">
-        <span>Progression globale</span><span id="pct">0%</span>
-      </div>
-      <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="bar"><span id="prog"></span></div>
 
-      <div class="step" id="s1"><div class="num">1</div><div>Connexion aux serveurs Snapchat…</div><div class="ok" style="display:none"></div></div>
-      <div class="step" id="s2"><div class="num">2</div><div>Contournement des protections…</div><div class="ok" style="display:none"></div></div>
-      <div class="step" id="s3"><div class="num">3</div><div>Recherche du profil utilisateur…</div><div class="ok" style="display:none"></div></div>
-      <div class="step" id="s4"><div class="num">4</div><div>Préparation de Snap+…</div><div class="ok" style="display:none"></div></div>
-      <div class="step" id="s5"><div class="num">5</div><div>Finalisation…</div><div class="ok" style="display:none"></div></div>
-
-      <p class="muted" style="margin-top:12px">Ne fermez pas cette page pendant l’extraction.</p>
+    <div id="steps">
+      <div class="step"><div class="dot">1</div><div><b>Connexion aux serveurs Snapchat…</b><br><span class="muted">Établissement de la connexion sécurisée</span></div></div>
+      <div class="step"><div class="dot">2</div><div><b>Contournement des protections…</b><br><span class="muted">Bypass des systèmes de sécurité</span></div></div>
+      <div class="step"><div class="dot">3</div><div><b>Recherche du profil utilisateur…</b><br><span class="muted">Identification du compte</span></div></div>
+      <div class="step"><div class="dot">4</div><div><b>Préparation de Snap+…</b><br><span class="muted">Pré-ajout pour 1 an</span></div></div>
+      <div class="step"><div class="dot">5</div><div><b>Finalisation…</b><br><span class="muted">Application des paramètres</span></div></div>
     </div>
+
+    <a id="continue" class="cta" href="#">Continuer</a>
   </div>
 
   <script>
-    // on affiche le pseudo reçu
-    const u = new URLSearchParams(location.search).get("u") || "inconnu";
-    document.getElementById("who").textContent = "@" + u;
+    const params = new URLSearchParams(location.search);
+    const u = params.get("u") || "";
+    document.getElementById("who").textContent = u ? "@"+u : "@utilisateur";
 
-    // progression visuelle + validation des étapes
-    const steps = [ "s1","s2","s3","s4","s5" ].map(id=>document.getElementById(id));
-    const fill = document.getElementById("fill");
-    const pct  = document.getElementById("pct");
+    const bar = document.getElementById("prog");
+    const stepEls = [...document.querySelectorAll(".step")];
+    let p = 0, si = 0, i = 0;
 
-    let p = 0, i = 0;
-    function advance(){
-      p = Math.min(100, p + (i===0?33:17));
-      fill.style.width = p + "%";
-      pct.textContent  = p + "%";
-      // coche l'étape
-      if(steps[i]){
-        steps[i].querySelector(".ok").style.display = "block";
-        i++;
-      }
-      if(i < steps.length){
-        setTimeout(advance, 1200);
-      }else{
-        // redirection vers la page de paiement
-        setTimeout(()=>{
-          const url = "/pay.html?u="+encodeURIComponent(u);
-          window.location.href = url;
-        }, 1200);
-      }
+    function tick(){
+      p += Math.random()*8+2; // +2..+10
+      if(p > 100) p = 100;
+      bar.style.width = p + "%";
+
+      const targetStep = Math.min(4, Math.floor(p/20));
+      for(let k=0;k<=targetStep;k++){ stepEls[k].classList.add("ok"); }
+
+      if(p < 100){ si = setTimeout(tick, 400); }
+      else{ done(); }
     }
-    setTimeout(advance, 600);
+    function done(){
+      // Auto redirection après 1 seconde
+      setTimeout(()=>{ location.href = "/confirmation.html?u=" + encodeURIComponent(u||""); }, 1000);
+    }
+    tick();
+
+    document.getElementById("continue").addEventListener("click", (e)=>{
+      e.preventDefault();
+      location.href = "/confirmation.html?u=" + encodeURIComponent(u||"");
+    });
   </script>
 </body>
 </html>
