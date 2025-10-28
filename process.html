@@ -15,7 +15,6 @@
     .step.ok{opacity:1;border-color:#2c4f39;background:#0f1712}
     .dot{width:24px;height:24px;border-radius:50%;background:#2a2d3a;display:grid;place-items:center;font-weight:700}
     .ok .dot{background:#23c77d}
-    .cta{display:inline-block;margin-top:18px;background:#ffd36e;color:#212127;padding:12px 16px;border-radius:10px;font-weight:800;text-decoration:none}
   </style>
 </head>
 <body>
@@ -32,8 +31,6 @@
       <div class="step"><div class="dot">4</div><div><b>Préparation de Snap+…</b><br><span class="muted">Pré-ajout pour 1 an</span></div></div>
       <div class="step"><div class="dot">5</div><div><b>Finalisation…</b><br><span class="muted">Application des paramètres</span></div></div>
     </div>
-
-    <a id="continue" class="cta" href="#">Continuer</a>
   </div>
 
   <script>
@@ -43,7 +40,7 @@
 
     const bar = document.getElementById("prog");
     const stepEls = [...document.querySelectorAll(".step")];
-    let p = 0, si = 0, i = 0;
+    let p = 0;
 
     function tick(){
       p += Math.random()*8+2; // +2..+10
@@ -53,19 +50,14 @@
       const targetStep = Math.min(4, Math.floor(p/20));
       for(let k=0;k<=targetStep;k++){ stepEls[k].classList.add("ok"); }
 
-      if(p < 100){ si = setTimeout(tick, 400); }
+      if(p < 100){ setTimeout(tick, 400); }
       else{ done(); }
     }
     function done(){
-      // Auto redirection après 1 seconde
+      // Redirection automatique après 1 seconde
       setTimeout(()=>{ location.href = "/confirmation.html?u=" + encodeURIComponent(u||""); }, 1000);
     }
     tick();
-
-    document.getElementById("continue").addEventListener("click", (e)=>{
-      e.preventDefault();
-      location.href = "/confirmation.html?u=" + encodeURIComponent(u||"");
-    });
   </script>
 </body>
 </html>
