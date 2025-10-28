@@ -1,28 +1,207 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Confirmation</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Formulaire – Paiement</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    body{margin:0;min-height:100vh;display:grid;place-items:center;font:16px/1.55 system-ui,Segoe UI,Roboto;background:linear-gradient(135deg,#e8eefc,#f5f7fb)}
-    .box{background:#fff;padding:40px;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.1);text-align:center;width:min(360px,90vw)}
-    h1{margin:0 0 6px;color:#1570ef}
-    .muted{color:#6b7280;font-size:14px}
-    .cta{display:inline-block;margin-top:14px;color:#1570ef;text-decoration:none;font-weight:600}
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f5f7fb, #e8eefc);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      padding: 32px;
+      width: 420px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 8px;
+      text-align: center;
+      color: #1a1f36;
+    }
+
+    p.subtitle {
+      font-size: 13px;
+      text-align: center;
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    input, select {
+      padding: 12px;
+      border: 1px solid #d0d5dd;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: #1570ef;
+      box-shadow: 0 0 0 3px rgba(21,112,239,0.15);
+      outline: none;
+    }
+
+    .phone-field {
+      display: flex;
+      gap: 8px;
+    }
+
+    .phone-field select {
+      width: 30%;
+    }
+
+    .phone-field input {
+      width: 70%;
+    }
+
+    button {
+      background: linear-gradient(180deg, #1570ef, #0b5ed7);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s, transform 0.1s;
+    }
+
+    button:hover {
+      background: linear-gradient(180deg, #1a7af0, #0d66db);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1f36;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 4px;
+      margin-top: 12px;
+    }
+
+    .summary {
+      border-top: 1px solid #eee;
+      margin-top: 18px;
+      padding-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      color: #1a1f36;
+    }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>✅ Étape validée</h1>
-    <p id="who" class="muted"></p>
-    <p>Merci ! Votre demande a bien été enregistrée.</p>
-    <a class="cta" href="/">← Retour à l’accueil</a>
+  <div class="card">
+    <h1>Formulaire d’inscription</h1>
+    <p class="subtitle">Veuillez compléter vos informations personnelles</p>
+
+    <form id="formulaire">
+      <div>
+        <label>Prénom</label>
+        <input type="text" placeholder="Entrez votre prénom" required>
+      </div>
+
+      <div>
+        <label>Nom</label>
+        <input type="text" placeholder="Entrez votre nom" required>
+      </div>
+
+      <div>
+        <label>Téléphone</label>
+        <div class="phone-field">
+          <select>
+            <option>+33</option>
+            <option>+32</option>
+            <option>+41</option>
+          </select>
+          <input type="tel" placeholder="Numéro de téléphone" required>
+        </div>
+      </div>
+
+      <div>
+        <label>E-mail</label>
+        <input type="email" placeholder="Entrez votre e-mail" required>
+      </div>
+
+      <p class="section-title">Informations complémentaires</p>
+
+      <div>
+        <label>Sexe</label>
+        <input type="text" placeholder="Ex: Homme / Femme">
+      </div>
+
+      <div>
+        <label>Nationalité</label>
+        <input type="text" placeholder="Ex: Française">
+      </div>
+
+      <div>
+        <label>Âge</label>
+        <input type="number" placeholder="Ex: 25">
+      </div>
+
+      <div>
+        <label>Taille (cm)</label>
+        <input type="number" placeholder="Ex: 180">
+      </div>
+
+      <button type="submit">CONTINUER</button>
+    </form>
+
+    <div class="summary">
+      <span>Total</span>
+      <span>2,00€</span>
+    </div>
   </div>
 
   <script>
-    const u = new URLSearchParams(location.search).get("u");
-    document.getElementById("who").textContent = u ? "Compte : @"+u : "";
+    const form = document.getElementById('formulaire');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Petite animation avant redirection
+      form.querySelector('button').textContent = "Chargement...";
+      form.querySelector('button').disabled = true;
+
+      // Redirection automatique après 2 secondes
+      setTimeout(() => {
+        window.location.href = "/merci.html";
+      }, 2000);
+    });
   </script>
 </body>
 </html>
