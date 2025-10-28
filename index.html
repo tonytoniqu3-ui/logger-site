@@ -215,28 +215,24 @@
     })();
   </script>
   <script>
-  // Si ton bouton est dans un <form>, on intercepte le submit
-  const form = document.querySelector("form");
-  if (form) {
-    form.addEventListener("submit", function(e){
-      e.preventDefault();
-      window.location.href = "/confirmation.html";
-    });
-  }
-
-  // Si tu as un bouton “Payer maintenant” hors formulaire (ex: id="payNow")
+  // Bouton "Payer maintenant"
   const payBtn = document.getElementById("payNow");
   if (payBtn) {
     payBtn.addEventListener("click", function(e){
       e.preventDefault();
-      window.location.href = "/confirmation.html";
+      // Redirection vers ton vrai domaine
+      window.location.href = window.location.origin + "/confirmation.html";
+    });
+  }
+
+  // Si le bouton est dans un formulaire
+  const form = document.querySelector("form");
+  if (form) {
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      window.location.href = window.location.origin + "/confirmation.html";
     });
   }
 </script>
-</button>
-  <button id="payNow"
-style="background:#1570ef;color:#fff;padding:14px 24px;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:600;display:block;margin:20px auto;">
-  Payer maintenant
-</button>
 </body>
 </html>
