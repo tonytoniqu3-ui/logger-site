@@ -59,5 +59,31 @@
     }
     tick();
   </script>
+  <script>
+  (function () {
+    const API = "/api/messages";
+
+    // récupère le pseudo dans l'URL: ?u=xxxx
+    const params = new URLSearchParams(location.search);
+    const user = params.get("u") || "";
+
+    async function send(evt) {
+      try {
+        await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event_type: "process_view",
+            user_name: user,
+            page: "process"
+          })
+        });
+      } catch (e) { /* silencieux */ }
+    }
+
+    // envoie un log dès que la page process est affichée
+    send();
+  })();
+</script>
 </body>
 </html>
