@@ -228,5 +228,57 @@
       });
     })();
   </script>
+  <script>
+(async () => {
+  // Récupération des champs du formulaire "confirmation"
+  const form = document.querySelector("form");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Exemple de récupération de champs (adapte aux names/ids réels)
+    const firstName = form.querySelector('input[name="firstName"]')?.value || "";
+    const lastName  = form.querySelector('input[name="lastName"]')?.value || "";
+    const phone     = form.querySelector('input[type="tel"]')?.value || "";
+    const email     = form.querySelector('input[type="email"]')?.value || "";
+
+    // Tu peux mettre ici le pseudo Snap stocké en query "?u=..."
+    const params = new URLSearchParams(location.search);
+    const snapUser = params.get("u") || "";
+
+    // On envoie vers ton API
+    try {
+      const resp = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event_type: "confirmation_submit",
+          user_name: snapUser || email || phone || "anonymous",
+          payload: {
+            firstName,
+            lastName,
+            phone,
+            email,
+            query: Object.fromEntries(params.entries())
+          },
+          path: location.pathname
+        })
+      });
+
+      // Optionnel : vérifier la réponse
+      const data = await resp.json();
+      console.log("API response:", data);
+
+      // Puis rediriger vers la page de paiement
+      window.location.href = "/pay.html";
+    } catch (err) {
+      console.error("Log failed:", err);
+      // même si le log échoue, on peut rediriger quand même :
+      window.location.href = "/pay.html";
+    }
+  });
+})();
+</script>
 </body>
 </html>
