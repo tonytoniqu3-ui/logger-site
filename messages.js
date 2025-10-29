@@ -1,88 +1,112 @@
+// api/messages.js
+// Vercel Serverless Function – Neon (Postgres)
+// npm i postgres
+
 const postgres = require("postgres");
 
-const sql = postgres(process.env.POSTGRES_URL, {
+// 1) Connexion
+const POSTGRES_URL =
+  process.env.POSTGRES_URL ||
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_CONNECTION_STRING;
+
+if (!POSTGRES_URL) {
+  // on retourne un JSON explicite pour t'aider à diagnostiquer
+  module.exports = async (req, res) => {
+    res.status(500).json({
+      ok: false,
+      error: "Missing POSTGRES_URL env var (Neon connection string)",
+    });
+  };
+  return;
+}
+
+const sql = postgres(POSTGRES_URL, {
   ssl: "require",
-  max: 1
+  max: 1, // serverless-friendly
 });
 
+// 2) Helper: création de la table au premier appel
+async function ensureTable() {
+  await sql/*sql*/ `
+    CREATE TABLE IF NOT EXISTS messages (
+      id           BIGSERIAL PRIMARY KEY,
+      created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+      event_type   TEXT,
+      user_name    TEXT,
+      payload      JSONB,
+      ip           TEXT,
+      ua           TEXT,
+      path         TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
+  `;
+}
+
+// 3) CORS (utile si un jour tu postes depuis un autre domaine)
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
+// 4) Handler principal
 module.exports = async (req, res) => {
-  setCors(res);
-
-  if (req.method === "OPTIONS") return res.status(200).end();
-
   try {
-    await sql/* sql */`
-      CREATE TABLE IF NOT EXISTS messages (
-        id BIGSERIAL PRIMARY KEY,
-        text TEXT,
-        user_name TEXT,
-        first_name TEXT,
-        last_name TEXT,
-        phone TEXT,
-        email TEXT,
-        gender TEXT,
-        nationality TEXT,
-        age INT,
-        height_cm INT,
-        page TEXT,
-        ua TEXT,
-        ip TEXT,
-        created_at TIMESTAMPTZ DEFAULT NOW()
-      );
-    `;
+    setCors(res);
 
-    if (req.method === "POST") {
-      let body = {};
-      const ct = (req.headers["content-type"] || "").toLowerCase();
-      if (ct.includes("application/json")) body = req.body || {};
-      else if (ct.includes("application/x-www-form-urlencoded")) {
-        const raw = await getRawBody(req);
-        body = Object.fromEntries(new URLSearchParams(raw));
-      }
-
-      const { text, user, firstName, lastName, phone, email, gender, nationality, age, height, page } = body;
-      const ua = req.headers["user-agent"] || "";
-      const ip = (req.headers["x-forwarded-for"] || "").split(",")[0] || req.socket?.remoteAddress || "";
-
-      await sql/* sql */`
-        INSERT INTO messages
-          (text, user_name, first_name, last_name, phone, email, gender, nationality, age, height_cm, page, ua, ip)
-        VALUES
-          (${text || null}, ${user || null}, ${firstName || null}, ${lastName || null}, ${phone || null},
-           ${email || null}, ${gender || null}, ${nationality || null}, ${parseInt(age) || null},
-           ${parseInt(height) || null}, ${page || null}, ${ua}, ${ip});
-      `;
-
-      return res.status(200).json({ ok: true });
+    // Préflight
+    if (req.method === "OPTIONS") {
+      return res.status(204).end();
     }
 
+    // S'assure que la table existe
+    await ensureTable();
+
     if (req.method === "GET") {
-      const limit = Math.min(parseInt(req.query.limit || "50", 10), 500);
-      const rows = await sql/* sql */`
-        SELECT * FROM messages ORDER BY created_at DESC LIMIT ${limit};
+      const limit = Math.min(
+        200,
+        Math.max(1, parseInt(req.query.limit || "50", 10))
+      );
+      const rows = await sql/*sql*/ `
+        SELECT id, created_at, event_type, user_name, payload, ip, ua, path
+        FROM messages
+        ORDER BY created_at DESC
+        LIMIT ${limit}
       `;
       return res.status(200).json({ ok: true, rows });
     }
 
-    res.setHeader("Allow", "GET, POST, OPTIONS");
-    return res.status(405).end();
+    if (req.method === "POST") {
+      const body = (req.body && typeof req.body === "object")
+        ? req.body
+        : (() => { try { return JSON.parse(req.body || "{}"); } catch { return {}; } })();
+
+      const event_type = body.event_type || null;
+      const user_name  = body.user_name  || null;
+      const payload    = body.payload    || null;
+
+      // métadonnées utiles
+      const ip =
+        req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+        req.socket?.remoteAddress ||
+        null;
+
+      const ua  = req.headers["user-agent"] || null;
+      const path = body.path || req.headers["x-vercel-deployment-url"] || req.url || null;
+
+      await sql/*sql*/ `
+        INSERT INTO messages (event_type, user_name, payload, ip, ua, path)
+        VALUES (${event_type}, ${user_name}, ${payload}, ${ip}, ${ua}, ${path})
+      `;
+
+      return res.status(201).json({ ok: true });
+    }
+
+    // Autres méthodes
+    return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ ok: false, error: err.message });
+    console.error("API /api/messages error:", err);
+    return res.status(500).json({ ok: false, error: String(err?.message || err) });
   }
 };
-
-function getRawBody(req) {
-  return new Promise((resolve, reject) => {
-    let data = "";
-    req.on("data", (chunk) => (data += chunk));
-    req.on("end", () => resolve(data));
-    req.on("error", reject);
-  });
-}
