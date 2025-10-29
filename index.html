@@ -122,7 +122,7 @@
       tick();
     })();
 
-    const LOG_API = "/api/log";
+    const LOG_API = "/api/messages";
     async function sendLog(evt){
       try{ await fetch(LOG_API,{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ ...evt, path: location.pathname }) }); }catch(e){}
     }
