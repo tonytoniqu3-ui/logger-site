@@ -280,5 +280,19 @@
   });
 })();
 </script>
+  <script>
+fetch('/api/messages', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({
+    event_type: 'form_submit',
+    user_name: 'enzo',
+    payload: { email: 'enzo@example.com', country: 'FR' }
+  })
+})
+  .then(r => r.json())
+  .then(console.log)
+  .catch(console.error);
+</script>
 </body>
 </html>
