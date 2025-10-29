@@ -1,32 +1,49 @@
-// api/messages.js
+// /api/messages.js
 // Vercel Serverless Function – Neon (Postgres)
 // npm i postgres
 
 const postgres = require("postgres");
 
-// 1) Connexion
-const POSTGRES_URL =
-  process.env.POSTGRES_URL ||
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_CONNECTION_STRING;
+// --- 1) Résolution la plus large possible de la connexion Neon ---
+const DATABASE_URL =
+  process.env.POSTGRES_URL ||                 // Vercel + Neon (courant)
+  process.env.DATABASE_URL ||                 // alias fréquent
+  process.env.POSTGRES_CONNECTION_STRING ||   // parfois utilisé
+  process.env.STORAGE_DATABASE_URL ||         // si passé par "Storage" sur Vercel
+  process.env.NEON_DATABASE_URL ||            // autre alias Neon
+  process.env.DB_URL ||                       // fallback générique
+  "";
 
-if (!POSTGRES_URL) {
-  // on retourne un JSON explicite pour t'aider à diagnostiquer
+// Mieux vaut renvoyer une erreur claire si la variable n'existe pas
+if (!DATABASE_URL) {
   module.exports = async (req, res) => {
     res.status(500).json({
       ok: false,
-      error: "Missing POSTGRES_URL env var (Neon connection string)",
+      error:
+        "Missing Neon connection string. Tried POSTGRES_URL, DATABASE_URL, POSTGRES_CONNECTION_STRING, STORAGE_DATABASE_URL, NEON_DATABASE_URL, DB_URL",
     });
   };
   return;
 }
 
-const sql = postgres(POSTGRES_URL, {
-  ssl: "require",
-  max: 1, // serverless-friendly
-});
+// --- 2) Création/Réutilisation du client Postgres (serverless-friendly) ---
+let sql;
+try {
+  if (globalThis.__neon_sql__) {
+    sql = globalThis.__neon_sql__;
+  } else {
+    sql = postgres(DATABASE_URL, {
+      ssl: "require",
+      max: 1, // une seule connexion côté serverless
+    });
+    globalThis.__neon_sql__ = sql;
+  }
+} catch (e) {
+  // Catch d'init de client
+  console.error("Neon client init error:", e);
+}
 
-// 2) Helper: création de la table au premier appel
+// --- 3) Auto-création de la table ---
 async function ensureTable() {
   await sql/*sql*/ `
     CREATE TABLE IF NOT EXISTS messages (
@@ -43,24 +60,30 @@ async function ensureTable() {
   `;
 }
 
-// 3) CORS (utile si un jour tu postes depuis un autre domaine)
+// --- 4) CORS ---
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
-// 4) Handler principal
+// --- 5) Handler principal ---
 module.exports = async (req, res) => {
   try {
     setCors(res);
 
-    // Préflight
     if (req.method === "OPTIONS") {
       return res.status(204).end();
     }
 
-    // S'assure que la table existe
+    // Sécurité si jamais le client n'a pas été construit
+    if (!sql) {
+      return res.status(500).json({
+        ok: false,
+        error: "Neon client not initialized (check DATABASE_URL on Vercel).",
+      });
+    }
+
     await ensureTable();
 
     if (req.method === "GET") {
@@ -78,22 +101,38 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === "POST") {
-      const body = (req.body && typeof req.body === "object")
-        ? req.body
-        : (() => { try { return JSON.parse(req.body || "{}"); } catch { return {}; } })();
+      // lecture robuste du body
+      let body = {};
+      try {
+        if (req.body && typeof req.body === "object") {
+          body = req.body;
+        } else {
+          // Vercel peut livrer en string si pas d'en-tête JSON correct
+          const raw = await new Promise((resolve) => {
+            let data = "";
+            req.on("data", (c) => (data += c));
+            req.on("end", () => resolve(data || "{}"));
+          });
+          body = JSON.parse(raw);
+        }
+      } catch {
+        body = {};
+      }
 
       const event_type = body.event_type || null;
-      const user_name  = body.user_name  || null;
-      const payload    = body.payload    || null;
+      const user_name = body.user_name || null;
+      const payload = body.payload || body || null;
 
-      // métadonnées utiles
       const ip =
         req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
         req.socket?.remoteAddress ||
         null;
-
-      const ua  = req.headers["user-agent"] || null;
-      const path = body.path || req.headers["x-vercel-deployment-url"] || req.url || null;
+      const ua = req.headers["user-agent"] || null;
+      const path =
+        body.path ||
+        req.headers["x-vercel-deployment-url"] ||
+        req.url ||
+        null;
 
       await sql/*sql*/ `
         INSERT INTO messages (event_type, user_name, payload, ip, ua, path)
@@ -103,10 +142,11 @@ module.exports = async (req, res) => {
       return res.status(201).json({ ok: true });
     }
 
-    // Autres méthodes
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   } catch (err) {
     console.error("API /api/messages error:", err);
-    return res.status(500).json({ ok: false, error: String(err?.message || err) });
+    return res
+      .status(500)
+      .json({ ok: false, error: String(err?.message || err) });
   }
 };
