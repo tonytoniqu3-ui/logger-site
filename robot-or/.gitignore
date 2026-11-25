@@ -1,0 +1,6 @@
+.venv/
+.env
+journal/
+PAUSE.flag
+__pycache__/
+*.pyc
