@@ -315,7 +315,7 @@ son `close` change encore. Si ton bot décide sur elle, un signal peut apparaît
 Le projet retire donc toute bougie non clôturée (`drop_unclosed`).
 
 **Quelle taille de bougie ?** Plus elles sont petites, plus il y a de signaux, donc de frais et de bruit.
-Pour débuter, prends **1 h** ou plus.
+Sur les vraies données (chapitre 8), les bougies **journalières** sont les seules qui ont tenu face aux frais.
 
 ## 4.2 L'EMA : la tendance
 
@@ -373,6 +373,7 @@ Un **backtest** rejoue le passé comme si le bot avait tourné. Il est utile seu
 ```bash
 python bot.py backtest --strategy donchian
 python bot.py compare
+python bot.py portfolio      # la configuration complète : BTC + ETH
 ```
 
 ## 5.3 Lire les résultats
@@ -546,28 +547,45 @@ Chaque mois : compare la performance du bot à « acheter et garder » sur la m�
 
 ## 8.1 Les vrais résultats
 
-Voici ce qu'affiche la commande `python bot.py compare --demo`, sur un **marché synthétique**
-(une marche aléatoire générée par ordinateur, en baisse de 43 % sur la période). Ce n'est pas le vrai
-bitcoin, et ces chiffres ne disent rien du vrai marché. Ils montrent ce que le bot sait mesurer :
+Voici ce qu'a donné le bot sur les vraies bougies de Coinbase, téléchargées le 25 novembre 2026.
+La méthode a été fixée **avant** de regarder les résultats : réglages choisis sur les 70 % les plus anciens
+de l'historique, verdict sur les 30 % les plus récents, jamais vus pendant le choix. Frais de 0,6 % par ordre compris.
 
-| Stratégie | Rendement | Acheter et garder | Drawdown max | Trades |
+**Étape 1 : quelle taille de bougie ?** Moyenne hors échantillon de chaque famille de stratégies, sur 6 cryptos
+(BTC, ETH, SOL, XRP, ADA, DOGE) :
+
+| Taille de bougie | Meilleure stratégie | Pire stratégie | Acheter et garder |
+|---|---|---|---|
+| 1 heure | −1,1 % | −20,3 % | −27,0 % |
+| 6 heures | −1,3 % | −7,5 % | −67,0 % |
+| 1 jour | −0,3 % | −2,0 % | −44,4 % |
+
+En bougies de 1 heure, presque tout perd : trop de trades, trop de frais. En journalier, les stratégies
+protègent le capital pendant que le marché s'effondre. Sur les petites cryptos (SOL, XRP, ADA, DOGE), les
+résultats sont moins bons : le bot final ne trade que le bitcoin et l'ether.
+
+**Étape 2 : la configuration retenue.** Bitcoin et ether, bougies journalières, capital partagé moitié-moitié,
+cassure de Donchian 20/10 avec filtre EMA 200, stop à 3 × ATR, 3 % de chaque moitié risqués par trade,
+coupe-circuit à −20 %. C'est le fichier `config.json` livré avec le code.
+
+| Période | Bot | Acheter et garder | Pire chute du bot | Trades |
 |---|---|---|---|---|
-| ema_cross | −20,4 % | −43,2 % | −20,4 % | 19 |
-| rsi_dip | −3,6 % | −43,2 % | −5,7 % | 4 |
-| donchian | −20,3 % | −43,2 % | −20,3 % | 21 |
-| macd | −20,8 % | −43,2 % | −20,8 % | 30 |
-| bollinger | −19,6 % | −43,2 % | −20,3 % | 21 |
+| Entraînement (août 2017 → février 2024) | +129,0 % | +1 214,3 % | −15,6 % | 40 |
+| **Jamais vue (février 2024 → novembre 2026)** | **+9,8 %** | **−6,6 %** | **−9,6 %** | **20** |
+| 1 000 derniers jours (mars 2024 → novembre 2026) | +2,3 % | −28,9 % | −8,0 % | 20 |
 
-Ce que ce tableau enseigne :
+Ce que ces chiffres disent vraiment :
 
-- **Sur un marché sans vraie tendance, aucune stratégie ne gagne.** Ici, le hasard plus 1,2 % de frais par aller-retour suffit à tout faire perdre.
-- **Le coupe-circuit fait son travail.** Les pertes s'arrêtent vers −20 % au lieu de −43 %.
-- **« Perdre moins que le marché » n'est pas « gagner ».** La validation stricte rejette ces stratégies, et elle a raison.
+- **Pendant une grande hausse, le bot gagne beaucoup moins qu'acheter et garder.** De 2017 à 2024, +129 % contre +1 214 %.
+  Il n'investit qu'une partie du capital, et il sort à chaque fausse alerte.
+- **Pendant une baisse, il protège.** Sa pire chute est de −15,6 % en 9 ans. Acheter et garder a connu des chutes de −70 à −80 %.
+- **Sur les données jamais vues, il bat acheter et garder et gagne un peu d'argent** : +9,8 % en presque 3 ans,
+  soit environ 3,4 % par an. C'est modeste, et c'est honnête.
+- **20 trades, c'est peu.** Le test de Monte-Carlo montre qu'avec un autre ordre de trades, le pire des cas à 5 %
+  aurait été une perte d'environ −36 %. La chance compte encore beaucoup.
 
-**Tes résultats.** Lance maintenant `python bot.py compare` puis `python bot.py validate` sur les vraies données
-de Coinbase. Note les chiffres dans ton carnet, **datés**. Ils dépendent de la période : une stratégie de tendance
-brille pendant une grande hausse et souffre dans un marché qui tourne en rond. C'est pour ça qu'on teste sur
-deux ans, et qu'on revalide tous les trois mois.
+Ces chiffres dépendent de la période. Relance `python bot.py portfolio` pour obtenir les tiens à la date d'aujourd'hui,
+et revalide tous les trois mois.
 
 ## 8.2 Les erreurs à éviter
 

@@ -1,14 +1,14 @@
 {
   "mode": "paper",
-  "product": "BTC-EUR",
-  "timeframe": "1h",
+  "products": ["BTC-EUR", "ETH-EUR"],
+  "timeframe": "1d",
   "strategy": "donchian",
   "params": {"entry": 20, "exit": 10, "trend_filter": true, "volume_filter": false},
   "capital": 100,
-  "history_days": 30,
-  "poll_seconds": 60,
+  "history_days": 300,
+  "poll_seconds": 900,
   "min_order": 1.0,
   "max_order": 100,
   "costs": {"fee": 0.006, "slippage": 0.0005},
-  "risk": {"atr_stop": 3.0, "risk_per_trade": 0.02, "max_position": 1.0, "kill_drawdown": 0.20}
+  "risk": {"atr_stop": 3.0, "risk_per_trade": 0.03, "max_position": 1.0, "kill_drawdown": 0.20}
 }

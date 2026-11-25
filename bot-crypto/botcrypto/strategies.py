@@ -57,6 +57,12 @@ def bollinger_rebound(df: pd.DataFrame, **p) -> pd.Series:
     return _hold((df["close"] < lo) & _filters(df, p), df["close"] > mid)
 
 
+def trend(df: pd.DataFrame, period: int = 200, **p) -> pd.Series:
+    """Suivi de tendance classique : acheté au-dessus de l'EMA longue, à plat en dessous."""
+    e = ind.ema(df["close"], period)
+    return _hold(df["close"] > e, df["close"] < e)
+
+
 def buy_and_hold(df: pd.DataFrame, **p) -> pd.Series:
     return pd.Series(1, index=df.index, dtype=int)
 
@@ -67,5 +73,6 @@ STRATEGIES = {
     "donchian": donchian_breakout,
     "macd": macd_trend,
     "bollinger": bollinger_rebound,
+    "trend": trend,
     "buy_hold": buy_and_hold,
 }

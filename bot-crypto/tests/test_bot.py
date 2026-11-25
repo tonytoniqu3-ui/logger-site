@@ -77,16 +77,43 @@ def test_drop_unclosed():
     assert len(drop_unclosed(d, "1h", now)) == 2
 
 
+RISK = {"atr_stop": 3, "risk_per_trade": 0.02, "max_position": 1, "kill_drawdown": 0.2}
+
+
 def test_paper_bot_step(tmp_path, df):
-    cfg = {"mode": "paper", "product": "BTC-EUR", "timeframe": "1h", "strategy": "buy_hold", "params": {},
-           "min_order": 1, "risk": {"atr_stop": 3, "risk_per_trade": 0.02, "max_position": 1, "kill_drawdown": 0.2}}
-    broker = PaperBroker("BTC", "EUR", 100, path=str(tmp_path / "w.json"))
+    cfg = {"mode": "paper", "products": ["BTC-EUR"], "timeframe": "1h", "strategy": "buy_hold", "params": {},
+           "min_order": 1, "risk": RISK}
+    broker = PaperBroker("EUR", 100, path=str(tmp_path / "w.json"))
     bot = Bot(cfg, broker, state_dir=str(tmp_path))
-    assert bot.step(df.iloc[:300]) == "achat"
-    assert bot.step(df.iloc[:300]) == "rien de neuf"  # même bougie : pas de double achat
-    q, b = broker.balances()
-    assert b > 0 and q < 100
+    assert bot.step({"BTC-EUR": df.iloc[:300]})["BTC-EUR"] == "achat"
+    assert bot.step({"BTC-EUR": df.iloc[:300]})["BTC-EUR"] == "rien de neuf"  # pas de double achat
+    assert broker.balance("BTC") > 0 and broker.balance("EUR") < 100
     crash = df.iloc[:301].copy()
     crash.iloc[-1, crash.columns.get_loc("low")] = 1.0
-    assert bot.step(crash) == "stop touché"
-    assert broker.balances()[1] == 0
+    assert bot.step({"BTC-EUR": crash})["BTC-EUR"] == "stop touché"
+    assert broker.balance("BTC") == 0
+
+
+def test_two_products_share_capital(tmp_path):
+    a, b = synthetic_candles(400, seed=1), synthetic_candles(400, seed=2, start_price=2000)
+    cfg = {"mode": "paper", "products": ["BTC-EUR", "ETH-EUR"], "timeframe": "1h", "strategy": "buy_hold",
+           "params": {}, "min_order": 1, "risk": {**RISK, "atr_stop": 0}}
+    broker = PaperBroker("EUR", 100, fee=0, slippage=0, path=str(tmp_path / "w.json"))
+    out = Bot(cfg, broker, state_dir=str(tmp_path)).step({"BTC-EUR": a, "ETH-EUR": b})
+    assert out == {"BTC-EUR": "achat", "ETH-EUR": "achat"}
+    # chaque paire reçoit au plus la moitié du capital
+    assert broker.balance("BTC") * a["close"].iloc[-1] == pytest.approx(50)
+    assert broker.balance("EUR") == pytest.approx(0)
+
+
+def test_kill_switch_live(tmp_path):
+    a = synthetic_candles(400, seed=1)
+    cfg = {"mode": "paper", "products": ["BTC-EUR"], "timeframe": "1h", "strategy": "buy_hold", "params": {},
+           "min_order": 1, "risk": {**RISK, "atr_stop": 0}}
+    broker = PaperBroker("EUR", 100, fee=0, slippage=0, path=str(tmp_path / "w.json"))
+    bot = Bot(cfg, broker, state_dir=str(tmp_path))
+    bot.step({"BTC-EUR": a})
+    crash = a.copy()
+    crash.iloc[-1, crash.columns.get_loc("close")] *= 0.5
+    assert "COUPE-CIRCUIT" in bot.step({"BTC-EUR": crash})["_"]
+    assert broker.balance("BTC") == 0 and bot.state["halted"]

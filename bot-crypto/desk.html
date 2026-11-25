@@ -85,11 +85,11 @@ canvas{display:block;width:100%;height:220px}
 
   <div class="controls">
     <div class="seg" role="group" aria-label="Mode">
-      <button id="m-replay" aria-pressed="true">Rejouer 30 jours</button>
+      <button id="m-replay" aria-pressed="true">Rejouer 1 000 jours</button>
       <button id="m-live" aria-pressed="false">Direct</button>
     </div>
     <select id="strat" aria-label="Stratégie">
-      <option value="donchian">Cassure de Donchian 20/10</option>
+      <option value="donchian">Cassure de Donchian 20/10 (validée)</option>
       <option value="ema">Croisement EMA 20/50</option>
     </select>
     <select id="speed" aria-label="Vitesse">
@@ -154,13 +154,14 @@ canvas{display:block;width:100%;height:220px}
     </div>
   </div>
 
-  <p class="note">Simulation : aucun ordre réel n'est passé. Frais de 0,6 % et glissement de 0,05 % comptés à chaque ordre. Décision à la clôture d'une bougie, exécution à l'ouverture de la suivante. Stop à 3 × ATR, 2 % du capital risqué par trade, coupe-circuit à −20 %. Contenu éducatif, pas un conseil en investissement.</p>
+  <p class="note">Simulation : aucun ordre réel n'est passé. Frais de 0,6 % et glissement de 0,05 % comptés à chaque ordre. Décision à la clôture d'une bougie, exécution à l'ouverture de la suivante. Bitcoin et ether, bougies journalières, capital partagé moitié-moitié. Stop à 3 × ATR, 3 % de chaque moitié risqué par trade, coupe-circuit à −20 %. Contenu éducatif, pas un conseil en investissement.</p>
 </div>
 
 <script>
 "use strict";
-const PAIRS = ["BTC-EUR","ETH-EUR","SOL-EUR","XRP-EUR","ADA-EUR","DOGE-EUR"];
-const CFG = { capital:100, fee:0.006, slip:0.0005, atrStop:3, risk:0.02, maxPerPair:0.34, kill:0.20, warm:210 };
+const PAIRS = ["BTC-EUR","ETH-EUR"];
+const DAY = 86400, REPLAY = 1000;
+const CFG = { capital:100, fee:0.006, slip:0.0005, atrStop:3, risk:0.03, maxPerPair:0.5, kill:0.20, warm:210 };
 const API = "https://api.exchange.coinbase.com";
 const eur = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
 const pctf = x => (x>=0?"+":"") + (x*100).toLocaleString("fr-FR",{minimumFractionDigits:1,maximumFractionDigits:1}) + " %";
@@ -203,15 +204,15 @@ function align(raw, gran){
     prepare(s); S[p]=s}
   return S;
 }
-function synthetic(n){
+function synthetic(n,step=DAY*1000){
   let seed=11; const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
   const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
-  const start={"BTC-EUR":60000,"ETH-EUR":2500,"SOL-EUR":120,"XRP-EUR":0.9,"ADA-EUR":0.5,"DOGE-EUR":0.15};
-  const t0=Date.now()-n*3600e3, S={}; const mkt=[]; let reg=0;
-  for(let i=0;i<n;i++){if(i%150===0)reg=[-1,0,1][Math.floor(rnd()*3)];mkt.push(0.0003*reg+0.006*gauss())}
+  const start={"BTC-EUR":60000,"ETH-EUR":2500};
+  const t0=Date.now()-n*step, S={}; const mkt=[]; let reg=0;
+  for(let i=0;i<n;i++){if(i%120===0)reg=[-1,0,1][Math.floor(rnd()*3)];mkt.push(0.003*reg+0.03*gauss())}
   for(const p of PAIRS){const s={t:[],o:[],h:[],l:[],c:[],v:[]};let c=start[p];
-    for(let i=0;i<n;i++){const r=mkt[i]*1.2+0.005*gauss();const o=c;c=o*Math.exp(r);const sp=Math.abs(gauss())*0.003*c;
-      s.t.push(t0+i*3600e3);s.o.push(o);s.c.push(c);s.h.push(Math.max(o,c)+sp);s.l.push(Math.min(o,c)-sp);s.v.push(100*(1+20*Math.abs(r)))}
+    for(let i=0;i<n;i++){const r=mkt[i]+0.015*gauss();const o=c;c=o*Math.exp(r);const sp=Math.abs(gauss())*0.015*c;
+      s.t.push(t0+i*step);s.o.push(o);s.c.push(c);s.h.push(Math.max(o,c)+sp);s.l.push(Math.min(o,c)-sp);s.v.push(100*(1+20*Math.abs(r)))}
     prepare(s);S[p]=s}
   return S;
 }
@@ -255,8 +256,8 @@ function step(st){
       if(want===0)st.wait[p]=false;
       if(!st.pos[p]&&want===1&&!st.wait[p]&&!isNaN(s.atr[i-1])){
         const fill=s.o[i]*(1+CFG.slip),dist=CFG.atrStop*s.atr[i-1]/fill;
-        const frac=Math.min(CFG.maxPerPair,CFG.risk/Math.max(dist,1e-9));
-        const spend=Math.min(eqPrev*frac,st.cash);
+        const frac=Math.min(1,CFG.risk/Math.max(dist,1e-9));
+        const spend=Math.min(eqPrev*CFG.maxPerPair*frac,st.cash);
         if(spend>=1){const fee=spend*CFG.fee;st.cash-=spend;st.fees+=fee;
           st.pos[p]={qty:(spend-fee)/fill,entry:fill,cost:spend,stop:fill-CFG.atrStop*s.atr[i-1]};
           ev.push({a:"exec",kind:"buy",p,txt:`Achat ${p.split("-")[0]} ${eur.format(spend)} à ${px(fill)}`,detail:`frais ${eur.format(fee)} · stop ${px(st.pos[p].stop)}`})}
@@ -300,9 +301,9 @@ function render(r){
   $("s-tr").textContent=st.trades.length;$("s-win").textContent=st.trades.length?`${wins}/${st.trades.length}`:"–";
   $("s-fee").textContent=eur.format(st.fees);$("s-dd").textContent=pctf(st.maxdd);
   // agents
-  const btc=S["BTC-EUR"];agent("scout",`6 paires · BTC ${px(btc.c[i])}`,`#${st.i-st.start}`);
+  const btc=S["BTC-EUR"];agent("scout",`BTC ${px(btc.c[i])} · ETH ${px(S["ETH-EUR"].c[i])}`,`#${st.i-st.start}`);
   const above=PAIRS.filter(p=>S[p].c[i]>S[p].ema200[i]);
-  agent("filter",above.length?`${above.length}/6 au-dessus de l'EMA 200 : ${above.map(p=>p.split("-")[0]).join(", ")}`:"aucune paire en tendance haussière : on ne fait rien",`${above.length}/6`);
+  agent("filter",above.length?`${above.length}/${PAIRS.length} au-dessus de l'EMA 200 : ${above.map(p=>p.split("-")[0]).join(", ")}`:"aucune paire en tendance haussière : on ne fait rien",`${above.length}/${PAIRS.length}`);
   const on=PAIRS.filter(p=>st.sig[p]===1);
   agent("analyst",on.length?`signal acheteur : ${on.map(p=>p.split("-")[0]).join(", ")}`:`aucun signal · RSI BTC ${btc.rsi[i].toFixed(0)}`,on.length?(on.length>1?`${on.length} signaux`:"1 signal"):"–");
   if(!r.ev.some(e=>e.a==="risk"))agent("risk",st.halted?"coupe-circuit déclenché, bot arrêté":`chute actuelle ${pctf(r.dd)} · limite −20 %`,Object.keys(st.pos).length+" stop"+(Object.keys(st.pos).length>1?"s":""));
@@ -356,14 +357,14 @@ function setSource(real,label){const b=$("src");b.textContent=label;b.className=
 async function loadReplay(){
   if(DATA)return DATA;
   setSource(false,"Chargement Coinbase…");
-  try{const raw={};for(const p of PAIRS)raw[p]=await fetchPair(p,3600,CFG.warm+720+10);
-    DATA={S:align(raw,3600),real:true};setSource(true,"Coinbase · vraies bougies 1 h")}
-  catch(e){DATA={S:synthetic(CFG.warm+720),real:false};setSource(false,"Coinbase injoignable · données synthétiques")}
+  try{const raw={};for(const p of PAIRS)raw[p]=await fetchPair(p,DAY,CFG.warm+REPLAY+10);
+    DATA={S:align(raw,DAY),real:true};setSource(true,"Coinbase · vraies bougies 1 jour")}
+  catch(e){DATA={S:synthetic(CFG.warm+REPLAY),real:false};setSource(false,"Coinbase injoignable · données synthétiques")}
   return DATA;
 }
 async function reset(){
   stop();$("recap").hidden=true;$("log").textContent="";buildAgents();
-  if(mode==="replay"){const d=await loadReplay();const n=d.S[PAIRS[0]].t.length;E=newState(d.S,Math.max(CFG.warm,n-720));
+  if(mode==="replay"){const d=await loadReplay();const n=d.S[PAIRS[0]].t.length;E=newState(d.S,Math.max(CFG.warm,n-REPLAY));
     $("clock").textContent=dfmt.format(d.S[PAIRS[0]].t[E.start]);}
   render0();
 }
@@ -379,20 +380,20 @@ function play(){
   timer=setInterval(()=>{const k=+$("speed").value;let r;for(let j=0;j<k&&E.i<E.n;j++){r=step(E);if(r.ev.length&&j<k-1){render(r)}}
     if(r)render(r);if(E.i>=E.n){stop();showRecap()}},250);
 }
-/* Direct : bougies de 5 min, une décision par bougie clôturée, tant que la page reste ouverte */
+/* Direct : bougies journalières, une décision par jour, tant que la page reste ouverte */
 async function startLive(){
   running=true;$("play").textContent="Pause";$("recap").hidden=true;
   const tick=async()=>{
-    try{const raw={};for(const p of PAIRS)raw[p]=await fetchPair(p,300,300);const S=align(raw,300);const n=S[PAIRS[0]].t.length;
-      setSource(true,"Coinbase · direct, bougies 5 min");
-      if(!LIVE){E=newState(S,n-1);LIVE={last:S[PAIRS[0]].t[n-1]};logLine(Date.now(),"DÉPART",getComputedStyle(document.documentElement).getPropertyValue("--accent"),"le bot surveille les 6 paires, une décision toutes les 5 minutes");
+    try{const raw={};for(const p of PAIRS)raw[p]=await fetchPair(p,DAY,300);const S=align(raw,DAY);const n=S[PAIRS[0]].t.length;
+      setSource(true,"Coinbase · direct, bougies 1 jour");
+      if(!LIVE){E=newState(S,n-1);LIVE={last:S[PAIRS[0]].t[n-1]};logLine(Date.now(),"DÉPART",getComputedStyle(document.documentElement).getPropertyValue("--accent"),"le bot surveille BTC et ETH, une décision par jour à la clôture (00:00 UTC)");
         $("clock").textContent="dernière bougie "+dfmt.format(LIVE.last);return}
       // on garde le portefeuille, on remplace les données et on traite les nouvelles bougies clôturées
       const old=E;old.S=S;old.n=n;let idx=S[PAIRS[0]].t.findIndex(t=>t>LIVE.last);
       if(idx<0)return;old.i=idx;let r;while(old.i<n){r=step(old);render(r)}LIVE.last=S[PAIRS[0]].t[n-1];
     }catch(e){setSource(false,"Coinbase injoignable : ouvre ce fichier dans ton navigateur");stop()}
   };
-  await tick();if(running)timer=setInterval(tick,30000);
+  await tick();if(running)timer=setInterval(tick,15*60*1000);
 }
 $("m-replay").onclick=()=>{mode="replay";$("m-replay").setAttribute("aria-pressed","true");$("m-live").setAttribute("aria-pressed","false");$("speed").disabled=false;LIVE=null;reset()};
 $("m-live").onclick=()=>{mode="live";$("m-live").setAttribute("aria-pressed","true");$("m-replay").setAttribute("aria-pressed","false");$("speed").disabled=true;stop();LIVE=null;E=null;$("log").textContent="";buildAgents();render0();$("clock").textContent="appuie sur « Lancer » pour démarrer";};

@@ -21,7 +21,7 @@ S = [
  ("Les 7 prompts", ["Données → Indicateurs → Stratégie", "Backtest → Avocat du diable", "Validation → Direct"]),
  ("Vérifier ce que Claude écrit", ["python -m pytest", "Un cas calculable à la main", "Résultat trop beau = bug"]),
  ("section", "4 · Les données", []),
- ("Les bougies", ["open · high · low · close · volume", "Ignore la bougie en cours", "Débute en 1 h ou plus"]),
+ ("Les bougies", ["open · high · low · close · volume", "Ignore la bougie en cours", "Débute en journalier : le seul qui a tenu face aux frais"]),
  ("EMA : la tendance", ["Moyenne qui privilégie le récent", "Prix > EMA 200 : tendance haussière", "EMA 20 × EMA 50 : accélération"]),
  ("RSI : l'élan", ["De 0 à 100, sur 14 bougies", "< 30 survendu, > 70 suracheté", "« Survendu » ≠ « va remonter »"]),
  ("ATR : la nervosité", ["Amplitude moyenne d'une bougie", "Place le stop (3 × ATR)", "Calcule la taille de position"]),
