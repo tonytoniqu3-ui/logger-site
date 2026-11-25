@@ -1,12 +1,18 @@
 """Deux « courtiers » avec la même interface : simulation (par défaut) et Coinbase réel.
 
-Interface : balance(devise) -> float ; buy(produit, montant_en_devise_de_cotation, prix) ; sell_all(produit, prix).
+Interface :
+  balance(devise) -> float
+  buy(produit, montant_en_euros, prix)  -> {"qty": quantité reçue, ...}
+  sell(produit, quantité, prix)         -> {"proceeds": euros reçus après frais, ...}
+
+Le bot ne vend jamais plus que ce qu'il a lui-même acheté.
 """
 from __future__ import annotations
 
 import json
 import math
 import os
+import time
 import uuid
 from pathlib import Path
 
@@ -41,61 +47,107 @@ class PaperBroker:
         self._save()
         return {"side": "BUY", "product": product, "qty": qty, "price": px, "fee": quote_amount * self.fee}
 
-    def sell_all(self, product: str, price: float) -> dict:
+    def sell(self, product: str, qty: float, price: float) -> dict:
         base = product.split("-")[0]
-        qty = self.wallet.get(base, 0.0)
+        qty = min(qty, self.wallet.get(base, 0.0))
         px = price * (1 - self.slippage)
         gross = qty * px
-        self.wallet[base] = 0.0
+        self.wallet[base] = self.wallet.get(base, 0.0) - qty
         self.wallet[self.quote] += gross * (1 - self.fee)
         self._save()
-        return {"side": "SELL", "product": product, "qty": qty, "price": px, "fee": gross * self.fee}
+        return {"side": "SELL", "product": product, "qty": qty, "price": px, "fee": gross * self.fee,
+                "proceeds": gross * (1 - self.fee)}
 
 
 class CoinbaseBroker:
-    """Ordres réels via l'API Coinbase Advanced Trade (pip install coinbase-advanced-py)."""
+    """Ordres réels via l'API Coinbase Advanced Trade (pip install coinbase-advanced-py).
 
-    def __init__(self, quote: str, products: list[str]):
-        from coinbase.rest import RESTClient  # import ici : inutile en simulation
+    Clé : soit le fichier `cdp_api_key.json` téléchargé sur Coinbase (dans le dossier du bot, ou
+    COINBASE_KEY_FILE), soit COINBASE_API_KEY + COINBASE_API_SECRET dans .env.
+    """
 
-        key, secret = os.environ.get("COINBASE_API_KEY"), os.environ.get("COINBASE_API_SECRET")
-        if not key or not secret:
-            raise RuntimeError("COINBASE_API_KEY / COINBASE_API_SECRET manquants (voir .env.example)")
-        self.client = RESTClient(api_key=key, api_secret=secret.replace("\\n", "\n"))
-        self.quote = quote
+    def __init__(self, quote: str, products: list[str], fee: float = 0.006, client=None):
+        self.quote, self.fee = quote, fee
+        self.client = client or self._make_client()
         self.increments = {}
         for p in products:
             info = self.client.get_product(p)
-            self.increments[p] = (float(info["base_increment"]), float(info["quote_increment"]))
+            self.increments[p] = (float(_get(info, "base_increment")), float(_get(info, "quote_increment")))
+
+    @staticmethod
+    def _make_client():
+        from coinbase.rest import RESTClient  # import ici : inutile en simulation
+
+        key_file = os.environ.get("COINBASE_KEY_FILE") or ("cdp_api_key.json" if Path("cdp_api_key.json").exists() else "")
+        if key_file:
+            return RESTClient(key_file=key_file)
+        key, secret = os.environ.get("COINBASE_API_KEY"), os.environ.get("COINBASE_API_SECRET")
+        if not key or not secret:
+            raise RuntimeError("Clé Coinbase introuvable : mets cdp_api_key.json dans le dossier du bot (voir GUIDE-WINDOWS.md)")
+        return RESTClient(api_key=key, api_secret=secret.replace("\\n", "\n"))
 
     def balance(self, currency: str) -> float:
         total, cursor = 0.0, None
         while True:
             page = self.client.get_accounts(limit=250, cursor=cursor) if cursor else self.client.get_accounts(limit=250)
-            for acc in page["accounts"]:
-                if acc["currency"] == currency:
-                    total += float(acc["available_balance"]["value"])
-            if not page["has_next"]:
+            for acc in _get(page, "accounts"):
+                if _get(acc, "currency") == currency:
+                    total += float(_get(_get(acc, "available_balance"), "value"))
+            if not _get(page, "has_next"):
                 return total
-            cursor = page["cursor"]
+            cursor = _get(page, "cursor")
 
     @staticmethod
     def _floor(x: float, step: float) -> str:
         decimals = max(0, -int(math.floor(math.log10(step))))
-        return f"{math.floor(x / step) * step:.{decimals}f}"
+        return f"{math.floor(x / step + 1e-9) * step:.{decimals}f}"
+
+    def _fill(self, response) -> dict:
+        """Attend l'exécution de l'ordre et renvoie ce qui a vraiment été exécuté."""
+        if not _get(response, "success"):
+            raise RuntimeError(f"Ordre refusé par Coinbase : {_plain(response)}")
+        order_id = _get(_get(response, "success_response"), "order_id")
+        order = {}
+        for _ in range(20):
+            order = _get(self.client.get_order(order_id), "order")
+            if _get(order, "status") in ("FILLED", "CANCELLED", "EXPIRED", "FAILED"):
+                break
+            time.sleep(1)
+        return {"order_id": order_id, "status": _get(order, "status"),
+                "filled_size": float(_get(order, "filled_size") or 0),
+                "filled_value": float(_get(order, "filled_value") or 0),
+                "total_fees": float(_get(order, "total_fees") or 0),
+                "average_filled_price": float(_get(order, "average_filled_price") or 0)}
 
     def buy(self, product: str, quote_amount: float, price: float) -> dict:
         size = self._floor(quote_amount, self.increments[product][1])
         r = self.client.market_order_buy(client_order_id=str(uuid.uuid4()), product_id=product, quote_size=size)
-        return {"side": "BUY", "product": product, "quote_size": size, "response": _plain(r)}
+        f = self._fill(r)
+        return {"side": "BUY", "product": product, "quote_size": size, "qty": f["filled_size"],
+                "price": f["average_filled_price"], "fee": f["total_fees"], **f}
 
-    def sell_all(self, product: str, price: float) -> dict:
-        qty = self.balance(product.split("-")[0])
+    def sell(self, product: str, qty: float, price: float) -> dict:
+        qty = min(qty, self.balance(product.split("-")[0]))  # jamais plus que ce qui est disponible
         size = self._floor(qty, self.increments[product][0])
         if float(size) <= 0:
-            return {"side": "SELL", "product": product, "skipped": "rien à vendre"}
+            return {"side": "SELL", "product": product, "qty": 0.0, "proceeds": 0.0, "skipped": "rien à vendre"}
         r = self.client.market_order_sell(client_order_id=str(uuid.uuid4()), product_id=product, base_size=size)
-        return {"side": "SELL", "product": product, "base_size": size, "response": _plain(r)}
+        f = self._fill(r)
+        proceeds = f["filled_value"] - f["total_fees"] if f["filled_value"] else float(size) * price * (1 - self.fee)
+        return {"side": "SELL", "product": product, "qty": f["filled_size"] or float(size), "price": f["average_filled_price"],
+                "fee": f["total_fees"], "proceeds": proceeds, **f}
+
+
+def _get(obj, key, default=None):
+    """Lit un champ, que le SDK renvoie un dict ou un objet."""
+    if obj is None:
+        return default
+    if isinstance(obj, dict):
+        return obj.get(key, default)
+    try:
+        return obj[key]
+    except Exception:
+        return getattr(obj, key, default)
 
 
 def _plain(r):

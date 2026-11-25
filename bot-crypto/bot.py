@@ -6,6 +6,7 @@
   portfolio  teste la configuration complète (toutes les paires de config.json, capital partagé)
   paper      fait tourner le bot en direct avec de l'argent fictif
   live       fait tourner le bot avec de l'argent réel (Coinbase) — après des semaines de paper !
+  telegram   vérifie les alertes Telegram (et trouve ton TELEGRAM_CHAT_ID)
 """
 import argparse
 import json
@@ -61,7 +62,7 @@ def show(title, m):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("command", choices=["backtest", "compare", "validate", "portfolio", "paper", "live"])
+    p.add_argument("command", choices=["backtest", "compare", "validate", "portfolio", "paper", "live", "telegram"])
     p.add_argument("--config", default="config.json")
     p.add_argument("--strategy")
     p.add_argument("--days", type=int, default=0, help="jours d'historique (défaut : 3400 en 1d, 730 sinon)")
@@ -70,6 +71,7 @@ def main():
     p.add_argument("--bars", type=int, default=6000)
     p.add_argument("--yes-real-money", action="store_true")
     args = p.parse_args()
+    load_env()
     cfg = json.loads(Path(args.config).read_text())
     cfg.setdefault("products", [cfg.get("product", "BTC-EUR")])
     cfg["product"] = args.product or cfg["products"][0]
@@ -77,7 +79,23 @@ def main():
         cfg["strategy"], cfg["params"] = args.strategy, {}
     costs, risk = bt.Costs(**cfg["costs"]), bt.Risk(**cfg["risk"])
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s",
-                        handlers=[logging.StreamHandler(), logging.FileHandler("bot.log")])
+                        handlers=[logging.StreamHandler(), logging.FileHandler("bot.log", encoding="utf-8")])
+
+    if args.command == "telegram":
+        from botcrypto.notify import Telegram
+        tg = Telegram()
+        if not tg.token:
+            sys.exit("TELEGRAM_BOT_TOKEN manquant dans le fichier .env (voir GUIDE-WINDOWS.md).")
+        if not tg.chat_id:
+            ids = tg.find_chat_ids()
+            if not ids:
+                sys.exit("Aucun message reçu : envoie d'abord « bonjour » à ton bot dans Telegram, puis relance.")
+            for cid, name in ids:
+                print(f"TELEGRAM_CHAT_ID={cid}   ({name})")
+            print("Copie la ligne dans ton fichier .env, puis relance : python bot.py telegram")
+            return
+        print("Message envoyé !" if tg.send("✅ Le bot crypto est bien relié à Telegram.") else "Échec de l'envoi : vérifie le token et le chat id.")
+        return
 
     if args.command == "portfolio":
         from botcrypto.data import load_or_fetch as lf
@@ -136,9 +154,8 @@ def main():
     else:
         if not args.yes_real_money:
             sys.exit("Mode réel : relance avec --yes-real-money (et seulement après des semaines en paper).")
-        load_env()
         cfg["mode"] = "live"
-        broker = CoinbaseBroker(quote, cfg["products"])
+        broker = CoinbaseBroker(quote, cfg["products"], fee=cfg["costs"]["fee"])
     Bot(cfg, broker).run_forever()
 
 

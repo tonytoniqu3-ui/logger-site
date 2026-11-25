@@ -22,9 +22,11 @@ pip install -r requirements.txt
 | `python bot.py compare` | Teste toutes les stratégies sur une paire (avec les frais) |
 | `python bot.py backtest --strategy donchian` | Teste une seule stratégie |
 | `python bot.py validate` | Optimise sur 70 % du passé, juge sur les 30 % jamais vus, puis Monte-Carlo |
+| `windows\*.bat` | Installation et lancement sous Windows : voir **GUIDE-WINDOWS.md** |
 | `python bot.py paper` | Fait tourner le bot en direct avec 100 € **fictifs** |
 | `python research.py` | Refait la recherche : toutes les stratégies × 6 paires × 1 h / 6 h / 1 jour |
 | `python bot.py live --yes-real-money` | Argent réel (seulement après des semaines de `paper`) |
+| `python bot.py telegram` | Vérifie les alertes Telegram |
 
 Ajoute `--demo` pour tester sans internet sur un marché synthétique.
 
@@ -55,8 +57,9 @@ En bougies de 1 h, toutes les stratégies testées perdent après frais (voir `r
 ## Mode réel
 
 1. Crée une clé API sur Coinbase Developer Platform avec les droits **View** et **Trade** seulement, jamais **Transfer**.
-2. Copie `.env.example` en `.env` et colle la clé. Le fichier `.env` n'est jamais commité.
-3. Lance `python bot.py live --yes-real-money`.
+2. Place le fichier téléchargé dans ce dossier sous le nom `cdp_api_key.json` (il n'est jamais commité).
+3. Mets ton budget dans `"capital"` de `config.json` : le bot ne dépense que ce budget et ne revend que ce qu'il a acheté lui-même.
+4. Lance `python bot.py live --yes-real-money`.
 
 Le bot écrit son journal dans `state/journal_<mode>.csv` et ses messages dans `bot.log`.
 Si le coupe-circuit s'est déclenché, le bot refuse de repartir tant que tu n'as pas supprimé

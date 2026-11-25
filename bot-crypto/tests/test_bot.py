@@ -82,7 +82,7 @@ RISK = {"atr_stop": 3, "risk_per_trade": 0.02, "max_position": 1, "kill_drawdown
 
 def test_paper_bot_step(tmp_path, df):
     cfg = {"mode": "paper", "products": ["BTC-EUR"], "timeframe": "1h", "strategy": "buy_hold", "params": {},
-           "min_order": 1, "risk": RISK}
+           "capital": 100, "min_order": 1, "risk": RISK}
     broker = PaperBroker("EUR", 100, path=str(tmp_path / "w.json"))
     bot = Bot(cfg, broker, state_dir=str(tmp_path))
     assert bot.step({"BTC-EUR": df.iloc[:300]})["BTC-EUR"] == "achat"
@@ -97,7 +97,7 @@ def test_paper_bot_step(tmp_path, df):
 def test_two_products_share_capital(tmp_path):
     a, b = synthetic_candles(400, seed=1), synthetic_candles(400, seed=2, start_price=2000)
     cfg = {"mode": "paper", "products": ["BTC-EUR", "ETH-EUR"], "timeframe": "1h", "strategy": "buy_hold",
-           "params": {}, "min_order": 1, "risk": {**RISK, "atr_stop": 0}}
+           "params": {}, "capital": 100, "min_order": 1, "risk": {**RISK, "atr_stop": 0}}
     broker = PaperBroker("EUR", 100, fee=0, slippage=0, path=str(tmp_path / "w.json"))
     out = Bot(cfg, broker, state_dir=str(tmp_path)).step({"BTC-EUR": a, "ETH-EUR": b})
     assert out == {"BTC-EUR": "achat", "ETH-EUR": "achat"}
@@ -106,10 +106,57 @@ def test_two_products_share_capital(tmp_path):
     assert broker.balance("EUR") == pytest.approx(0)
 
 
+def test_bot_never_touches_other_funds(tmp_path):
+    """Compte avec 1 000 € et 1 BTC personnels : le bot ne gère que ses 100 € et ce qu'il achète."""
+    a = synthetic_candles(400, seed=1)
+    cfg = {"mode": "paper", "products": ["BTC-EUR"], "timeframe": "1h", "strategy": "buy_hold", "params": {},
+           "capital": 100, "min_order": 1, "risk": {**RISK, "atr_stop": 0}}
+    broker = PaperBroker("EUR", 1000, fee=0, slippage=0, path=str(tmp_path / "w.json"))
+    broker.wallet["BTC"] = 1.0
+    bot = Bot(cfg, broker, state_dir=str(tmp_path))
+    bot.step({"BTC-EUR": a})
+    assert broker.balance("EUR") == pytest.approx(900)  # il n'a dépensé que son budget
+    crash = a.copy()
+    crash.iloc[-1, crash.columns.get_loc("close")] *= 0.5
+    bot.step({"BTC-EUR": crash})  # coupe-circuit : il revend SEULEMENT ce qu'il a acheté
+    assert broker.balance("BTC") == pytest.approx(1.0)
+    assert bot.state["halted"]
+
+
+def test_coinbase_broker_with_fake_client():
+    from botcrypto.broker import CoinbaseBroker
+
+    class Fake:
+        def __init__(self):
+            self.orders = []
+        def get_product(self, p):
+            return {"base_increment": "0.00000001", "quote_increment": "0.01"}
+        def get_accounts(self, limit=250, cursor=None):
+            return {"accounts": [{"currency": "BTC", "available_balance": {"value": "0.5"}}], "has_next": False}
+        def market_order_buy(self, **k):
+            self.orders.append(("buy", k))
+            return {"success": True, "success_response": {"order_id": "1"}}
+        def market_order_sell(self, **k):
+            self.orders.append(("sell", k))
+            return {"success": True, "success_response": {"order_id": "2"}}
+        def get_order(self, oid):
+            return {"order": {"status": "FILLED", "filled_size": "0.001", "filled_value": "50", "total_fees": "0.3",
+                              "average_filled_price": "50000"}}
+
+    f = Fake()
+    b = CoinbaseBroker("EUR", ["BTC-EUR"], client=f)
+    assert b.buy("BTC-EUR", 50.123, 50000)["qty"] == pytest.approx(0.001)
+    assert f.orders[0][1]["quote_size"] == "50.12"
+    r = b.sell("BTC-EUR", 0.001, 50000)
+    assert r["proceeds"] == pytest.approx(49.7)
+    assert f.orders[1][1]["base_size"] == "0.00100000"
+    assert b.sell("BTC-EUR", 2.0, 50000) and f.orders[2][1]["base_size"] == "0.50000000"  # plafonné au solde
+
+
 def test_kill_switch_live(tmp_path):
     a = synthetic_candles(400, seed=1)
     cfg = {"mode": "paper", "products": ["BTC-EUR"], "timeframe": "1h", "strategy": "buy_hold", "params": {},
-           "min_order": 1, "risk": {**RISK, "atr_stop": 0}}
+           "capital": 100, "min_order": 1, "risk": {**RISK, "atr_stop": 0}}
     broker = PaperBroker("EUR", 100, fee=0, slippage=0, path=str(tmp_path / "w.json"))
     bot = Bot(cfg, broker, state_dir=str(tmp_path))
     bot.step({"BTC-EUR": a})
@@ -117,3 +164,35 @@ def test_kill_switch_live(tmp_path):
     crash.iloc[-1, crash.columns.get_loc("close")] *= 0.5
     assert "COUPE-CIRCUIT" in bot.step({"BTC-EUR": crash})["_"]
     assert broker.balance("BTC") == 0 and bot.state["halted"]
+
+
+class FakeNotifier:
+    def __init__(self):
+        self.msgs = []
+
+    def send(self, text):
+        self.msgs.append(text)
+        return True
+
+
+def test_notifications(tmp_path):
+    a = synthetic_candles(400, seed=1)
+    cfg = {"mode": "paper", "products": ["BTC-EUR"], "timeframe": "1h", "strategy": "buy_hold", "params": {},
+           "capital": 100, "min_order": 1, "risk": RISK}
+    n = FakeNotifier()
+    bot = Bot(cfg, PaperBroker("EUR", 100, path=str(tmp_path / "w.json")), state_dir=str(tmp_path), notifier=n)
+    bot.step({"BTC-EUR": a})
+    assert any("ACHAT BTC-EUR" in m and "SIMULATION" in m for m in n.msgs)
+    assert sum("Bilan" in m for m in n.msgs) == 1
+    bot.step({"BTC-EUR": a})
+    assert sum("Bilan" in m for m in n.msgs) == 1  # un seul bilan par jour
+
+
+def test_telegram_disabled_and_failing():
+    from botcrypto.notify import Telegram
+    assert Telegram(token="", chat_id="").send("x") is False
+
+    class Boom:
+        def post(self, *a, **k):
+            raise ConnectionError("réseau coupé")
+    assert Telegram(token="t", chat_id="1", session=Boom()).send("x") is False
