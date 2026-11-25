@@ -166,7 +166,7 @@ const API = "https://api.exchange.coinbase.com";
 const eur = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
 const pctf = x => (x>=0?"+":"") + (x*100).toLocaleString("fr-FR",{minimumFractionDigits:1,maximumFractionDigits:1}) + " %";
 const px = p => p.toLocaleString("fr-FR",{maximumFractionDigits: p>=100?0 : p>=1?2 : 4}) + " €";
-const dfmt = new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+const dfmt = new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"short",year:"numeric",timeZone:"UTC"});
 const $ = id => document.getElementById(id);
 
 /* ---------- Indicateurs (identiques au code Python du bot) ---------- */
