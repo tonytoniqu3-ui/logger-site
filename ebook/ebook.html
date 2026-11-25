@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Cr��er son bot crypto de A �� Z</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<section class="cover"><div class="title">Créer son bot crypto<br>de A à Z</div>
+<div class="sub">Python · Coinbase · Claude — de zéro jusqu'au bot qui tourne</div>
+<div class="tag">Guide éducatif. Ce n'est pas un conseil en investissement. Le trading de cryptoactifs comporte un risque de perte totale du capital.</div></section>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#avant-de-commencer" id="toc-avant-de-commencer">Avant de
+commencer</a>
+<ul>
+<li><a href="#ce-que-tu-vas-construire"
+id="toc-ce-que-tu-vas-construire">Ce que tu vas construire</a></li>
+<li><a href="#ce-que-ce-guide-ne-te-promettra-pas"
+id="toc-ce-que-ce-guide-ne-te-promettra-pas">Ce que ce guide ne te
+promettra pas</a></li>
+<li><a href="#le-plan" id="toc-le-plan">Le plan</a></li>
+</ul></li>
+<li><a href="#chapitre-1-partir-de-zéro"
+id="toc-chapitre-1-partir-de-zéro">Chapitre 1 — Partir de zéro</a>
+<ul>
+<li><a href="#installer-python" id="toc-installer-python">1.1 Installer
+Python</a></li>
+<li><a href="#installer-vs-code" id="toc-installer-vs-code">1.2
+Installer VS Code</a></li>
+<li><a href="#créer-un-environnement-virtuel"
+id="toc-créer-un-environnement-virtuel">1.3 Créer un environnement
+virtuel</a></li>
+<li><a href="#le-python-indispensable"
+id="toc-le-python-indispensable">1.4 Le Python indispensable</a></li>
+</ul></li>
+<li><a href="#chapitre-2-les-bases"
+id="toc-chapitre-2-les-bases">Chapitre 2 — Les bases</a>
+<ul>
+<li><a href="#un-bot-cest-quoi" id="toc-un-bot-cest-quoi">2.1 Un bot,
+c’est quoi ?</a></li>
+<li><a href="#comment-marche-un-échange"
+id="toc-comment-marche-un-échange">2.2 Comment marche un
+échange</a></li>
+<li><a href="#les-frais-le-vrai-adversaire"
+id="toc-les-frais-le-vrai-adversaire">2.3 Les frais, le vrai
+adversaire</a></li>
+<li><a href="#lapi-et-les-clés" id="toc-lapi-et-les-clés">2.4 L’API et
+les clés</a></li>
+</ul></li>
+<li><a href="#chapitre-3-construire-le-bot-avec-claude"
+id="toc-chapitre-3-construire-le-bot-avec-claude">Chapitre 3 —
+Construire le bot avec Claude</a>
+<ul>
+<li><a href="#la-bonne-méthode" id="toc-la-bonne-méthode">3.1 La bonne
+méthode</a></li>
+<li><a href="#les-prompts-étape-par-étape"
+id="toc-les-prompts-étape-par-étape">3.2 Les prompts, étape par
+étape</a></li>
+<li><a href="#vérifier-ce-que-claude-écrit"
+id="toc-vérifier-ce-que-claude-écrit">3.3 Vérifier ce que Claude
+écrit</a></li>
+</ul></li>
+<li><a href="#chapitre-4-les-données"
+id="toc-chapitre-4-les-données">Chapitre 4 — Les données</a>
+<ul>
+<li><a href="#les-bougies" id="toc-les-bougies">4.1 Les bougies</a></li>
+<li><a href="#lema-la-tendance" id="toc-lema-la-tendance">4.2 L’EMA : la
+tendance</a></li>
+<li><a href="#le-rsi-lélan" id="toc-le-rsi-lélan">4.3 Le RSI :
+l’élan</a></li>
+<li><a href="#latr-la-nervosité" id="toc-latr-la-nervosité">4.4 L’ATR :
+la nervosité</a></li>
+</ul></li>
+<li><a href="#chapitre-5-les-stratégies"
+id="toc-chapitre-5-les-stratégies">Chapitre 5 — Les stratégies</a>
+<ul>
+<li><a href="#écrire-une-règle" id="toc-écrire-une-règle">5.1 Écrire une
+règle</a></li>
+<li><a href="#backtester" id="toc-backtester">5.2 Backtester</a></li>
+<li><a href="#lire-les-résultats" id="toc-lire-les-résultats">5.3 Lire
+les résultats</a></li>
+<li><a href="#valider-honnêtement" id="toc-valider-honnêtement">5.4
+Valider honnêtement</a></li>
+</ul></li>
+<li><a href="#chapitre-6-les-méthodes-reconnues"
+id="toc-chapitre-6-les-méthodes-reconnues">Chapitre 6 — Les méthodes
+reconnues</a>
+<ul>
+<li><a href="#la-cassure-de-donchian"
+id="toc-la-cassure-de-donchian">6.1 La cassure de Donchian</a></li>
+<li><a href="#le-macd" id="toc-le-macd">6.2 Le MACD</a></li>
+<li><a href="#les-bandes-de-bollinger"
+id="toc-les-bandes-de-bollinger">6.3 Les bandes de Bollinger</a></li>
+<li><a href="#les-filtres" id="toc-les-filtres">6.4 Les filtres</a></li>
+<li><a href="#le-ratio-de-sharpe" id="toc-le-ratio-de-sharpe">6.5 Le
+ratio de Sharpe</a></li>
+<li><a href="#le-ratio-de-calmar" id="toc-le-ratio-de-calmar">6.6 Le
+ratio de Calmar</a></li>
+<li><a href="#le-test-de-monte-carlo"
+id="toc-le-test-de-monte-carlo">6.7 Le test de Monte-Carlo</a></li>
+</ul></li>
+<li><a href="#chapitre-7-le-direct"
+id="toc-chapitre-7-le-direct">Chapitre 7 — Le direct</a>
+<ul>
+<li><a href="#la-gestion-du-risque" id="toc-la-gestion-du-risque">7.1 La
+gestion du risque</a></li>
+<li><a href="#la-simulation-paper-trading"
+id="toc-la-simulation-paper-trading">7.2 La simulation (paper
+trading)</a></li>
+<li><a href="#passer-en-réel" id="toc-passer-en-réel">7.3 Passer en
+réel</a></li>
+<li><a href="#le-suivi" id="toc-le-suivi">7.4 Le suivi</a></li>
+<li><a href="#le-dépannage" id="toc-le-dépannage">7.5 Le
+dépannage</a></li>
+</ul></li>
+<li><a href="#chapitre-8-le-bilan" id="toc-chapitre-8-le-bilan">Chapitre
+8 — Le bilan</a>
+<ul>
+<li><a href="#les-vrais-résultats" id="toc-les-vrais-résultats">8.1 Les
+vrais résultats</a></li>
+<li><a href="#les-erreurs-à-éviter" id="toc-les-erreurs-à-éviter">8.2
+Les erreurs à éviter</a></li>
+<li><a href="#la-checklist-complète" id="toc-la-checklist-complète">8.3
+La checklist complète</a></li>
+<li><a href="#le-mot-de-la-fin" id="toc-le-mot-de-la-fin">8.4 Le mot de
+la fin</a></li>
+</ul></li>
+<li><a href="#annexe-fiscalité-et-cadre-légal-france"
+id="toc-annexe-fiscalité-et-cadre-légal-france">Annexe — Fiscalité et
+cadre légal (France)</a></li>
+</ul>
+</nav>
+<h1 id="avant-de-commencer">Avant de commencer</h1>
+<h2 id="ce-que-tu-vas-construire">Ce que tu vas construire</h2>
+<p>À la fin de ce guide, tu auras un bot de trading qui :</p>
+<ul>
+<li>télécharge l’historique des prix de Coinbase (les « bougies »)
+;</li>
+<li>calcule des indicateurs (EMA, RSI, ATR, Donchian, MACD, Bollinger)
+;</li>
+<li>applique des règles d’achat et de vente que tu as écrites ;</li>
+<li>se teste lui-même sur deux ans d’historique, frais compris ;</li>
+<li>se juge sur des données qu’il n’a jamais vues et se compare à «
+acheter et garder » ;</li>
+<li>tourne en direct, d’abord avec de l’argent fictif, puis, si tu le
+décides, avec de l’argent réel ;</li>
+<li>protège ton capital avec un stop, une taille de position calculée et
+un coupe-circuit à −20 %.</li>
+</ul>
+<p>Tout le code est fourni dans le dossier <code>bot-crypto</code>. Tu
+peux le lire, le lancer et le modifier.</p>
+<h2 id="ce-que-ce-guide-ne-te-promettra-pas">Ce que ce guide ne te
+promettra pas</h2>
+<p>Tu as peut-être vu des vidéos du type « J’ai laissé une IA trader
+seule : 100 € → 200 € en deux jours ». Deux jours, c’est du bruit. Sur
+deux jours, une pièce de monnaie peut aussi « doubler ». Ce qui compte,
+c’est le comportement sur des mois, frais compris, comparé à ne rien
+faire.</p>
+<p>La plupart des bots amateurs <strong>perdent de l’argent</strong>,
+surtout à cause des frais. Ce guide t’apprend à construire un bot
+honnête, qui te dit la vérité, même quand elle est décevante. Un bot qui
+te dit « cette stratégie ne marche pas » t’a fait économiser de
+l’argent.</p>
+<blockquote>
+<p><strong>Avertissement.</strong> Ce guide est éducatif. Ce n’est pas
+un conseil en investissement. Les cryptoactifs sont très volatils et tu
+peux perdre la totalité de ton capital. N’engage que des sommes que tu
+peux te permettre de perdre. Les performances passées ne préjugent pas
+des performances futures.</p>
+</blockquote>
+<h2 id="le-plan">Le plan</h2>
+<ol type="1">
+<li>Partir de zéro : installer Python et VS Code, et le Python
+indispensable</li>
+<li>Les bases : comment marchent un bot et un échange de cryptos</li>
+<li>Avec Claude : construire le bot sans tout coder toi-même</li>
+<li>Les données : bougies et indicateurs</li>
+<li>Les stratégies : écrire des règles, backtester, valider
+honnêtement</li>
+<li>Les méthodes reconnues : Donchian, MACD, Bollinger, filtres, Sharpe,
+Calmar, Monte-Carlo</li>
+<li>Le direct : gestion du risque, simulation, suivi, dépannage</li>
+<li>Le bilan : résultats, erreurs à éviter, checklist complète</li>
+</ol>
+<h1 id="chapitre-1-partir-de-zéro">Chapitre 1 — Partir de zéro</h1>
+<h2 id="installer-python">1.1 Installer Python</h2>
+<p><strong>Windows</strong></p>
+<ol type="1">
+<li>Va sur python.org, rubrique <em>Downloads</em>, et télécharge la
+dernière version 3 (3.12 ou plus récente).</li>
+<li>Lance l’installateur et <strong>coche « Add python.exe to PATH
+»</strong> avant de cliquer sur <em>Install Now</em>. C’est l’oubli
+numéro un.</li>
+<li>Ouvre l’<em>Invite de commandes</em> et tape
+<code>python --version</code>. Tu dois voir
+<code>Python 3.x.x</code>.</li>
+</ol>
+<p><strong>macOS</strong></p>
+<ol type="1">
+<li>Télécharge l’installateur sur python.org et lance-le.</li>
+<li>Dans le <em>Terminal</em>, tape <code>python3 --version</code>.</li>
+</ol>
+<p>Sur Mac et Linux, la commande s’appelle souvent <code>python3</code>
+au lieu de <code>python</code>. Dans ce guide, remplace
+<code>python</code> par <code>python3</code> si besoin.</p>
+<h2 id="installer-vs-code">1.2 Installer VS Code</h2>
+<ol type="1">
+<li>Télécharge Visual Studio Code sur code.visualstudio.com et
+installe-le.</li>
+<li>Ouvre-le, clique sur l’icône <em>Extensions</em> (les quatre carrés
+à gauche) et installe l’extension <strong>Python</strong> de
+Microsoft.</li>
+<li><em>Fichier → Ouvrir le dossier…</em> et choisis le dossier
+<code>bot-crypto</code>.</li>
+<li>Ouvre un terminal intégré : <em>Terminal → Nouveau terminal</em>.
+Tout se passera là.</li>
+</ol>
+<h2 id="créer-un-environnement-virtuel">1.3 Créer un environnement
+virtuel</h2>
+<p>Un environnement virtuel est une boîte isolée qui contient les
+bibliothèques de ton projet. Comme ça, tu ne mélanges pas les projets
+entre eux.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> venv .venv</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Windows</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">.venv\Scripts\activate</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># macOS / Linux</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .venv/bin/activate</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-r</span> requirements.txt</span></code></pre></div>
+<p>Quand l’environnement est actif, tu vois <code>(.venv)</code> au
+début de la ligne du terminal. Dans VS Code, choisis-le aussi en bas à
+droite (<em>Sélectionner l’interpréteur</em>).</p>
+<h2 id="le-python-indispensable">1.4 Le Python indispensable</h2>
+<p>Tu n’as pas besoin d’être développeur. Tu as besoin de
+<strong>lire</strong> du code et d’en modifier un peu. Voici les 10
+notions qui suffisent pour ce projet.</p>
+<p><strong>Variables et types</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>capital <span class="op">=</span> <span class="fl">100.0</span>          <span class="co"># un nombre à virgule (float)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>paire <span class="op">=</span> <span class="st">&quot;BTC-EUR&quot;</span>        <span class="co"># du texte (str)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>en_position <span class="op">=</span> <span class="va">False</span>      <span class="co"># vrai ou faux (bool)</span></span></code></pre></div>
+<p><strong>Listes et dictionnaires</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>prix <span class="op">=</span> [<span class="dv">58000</span>, <span class="dv">58200</span>, <span class="dv">57900</span>]                       <span class="co"># une liste</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> {<span class="st">&quot;paire&quot;</span>: <span class="st">&quot;BTC-EUR&quot;</span>, <span class="st">&quot;frais&quot;</span>: <span class="fl">0.006</span>}      <span class="co"># un dictionnaire : clé -&gt; valeur</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(prix[<span class="dv">0</span>], config[<span class="st">&quot;frais&quot;</span>])                    <span class="co"># 58000 0.006</span></span></code></pre></div>
+<p><strong>Conditions</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> rsi <span class="op">&lt;</span> <span class="dv">30</span>:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;survendu&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> rsi <span class="op">&gt;</span> <span class="dv">70</span>:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;suracheté&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;neutre&quot;</span>)</span></code></pre></div>
+<p>L’indentation (les 4 espaces) n’est pas décorative : c’est elle qui
+dit à Python ce qui est « dans » le <code>if</code>.</p>
+<p><strong>Boucles</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> p <span class="kw">in</span> prix:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(p)</span></code></pre></div>
+<p><strong>Fonctions</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> variation(ancien, nouveau):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> nouveau <span class="op">/</span> ancien <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(variation(<span class="dv">100</span>, <span class="dv">110</span>))   <span class="co"># 0.1, soit +10 %</span></span></code></pre></div>
+<p><strong>Modules et import</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd                     <span class="co"># une bibliothèque externe</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> botcrypto <span class="im">import</span> indicators        <span class="co"># un fichier du projet</span></span></code></pre></div>
+<p><strong>pandas en trois lignes.</strong> pandas manipule des tableaux
+(des <em>DataFrame</em>). Chaque colonne est une <em>Series</em>.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">&quot;close&quot;</span>]                 <span class="co"># la colonne des prix de clôture</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">&quot;close&quot;</span>].iloc[<span class="op">-</span><span class="dv">1</span>]        <span class="co"># la dernière valeur</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">&quot;close&quot;</span>].rolling(<span class="dv">20</span>).mean()   <span class="co"># la moyenne mobile sur 20 bougies</span></span></code></pre></div>
+<p><strong>Les erreurs.</strong> Une erreur Python se lit <strong>de bas
+en haut</strong> : la dernière ligne dit ce qui ne va pas, les lignes
+au-dessus disent où. Copie-la telle quelle à Claude : c’est souvent la
+façon la plus rapide de la corriger.</p>
+<p><strong>try / except</strong></p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    prix <span class="op">=</span> recuperer_prix()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Problème réseau :&quot;</span>, e)</span></code></pre></div>
+<p>Un bot qui tourne 24 h/24 <em>va</em> rencontrer des coupures réseau.
+Il doit les encaisser sans planter.</p>
+<p><strong>Lancer un script</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> bot.py compare</span></code></pre></div>
+<h1 id="chapitre-2-les-bases">Chapitre 2 — Les bases</h1>
+<h2 id="un-bot-cest-quoi">2.1 Un bot, c’est quoi ?</h2>
+<p>Un bot de trading est une boucle très simple :</p>
+<ol type="1">
+<li><strong>Observer</strong> : récupérer les derniers prix.</li>
+<li><strong>Décider</strong> : appliquer des règles écrites à l’avance
+(« si le prix casse le plus haut des 20 dernières heures, j’achète
+»).</li>
+<li><strong>Agir</strong> : passer un ordre, ou ne rien faire.</li>
+<li><strong>Noter</strong> : écrire ce qu’il a fait dans un
+journal.</li>
+<li><strong>Attendre</strong> la prochaine bougie, et recommencer.</li>
+</ol>
+<p>Le bot n’est pas plus intelligent que ses règles. Son seul avantage
+sur toi : il applique les règles sans peur, sans avidité et sans
+fatigue, à 3 h du matin comme à midi.</p>
+<h2 id="comment-marche-un-échange">2.2 Comment marche un échange</h2>
+<p>Un échange comme Coinbase met en relation des acheteurs et des
+vendeurs.</p>
+<ul>
+<li><strong>La paire</strong> : <code>BTC-EUR</code> veut dire « acheter
+ou vendre du bitcoin contre des euros ». BTC est la devise <em>de
+base</em>, EUR la devise <em>de cotation</em>.</li>
+<li><strong>Le carnet d’ordres</strong> : la liste des offres d’achat
+(<em>bids</em>) et de vente (<em>asks</em>). L’écart entre le meilleur
+acheteur et le meilleur vendeur s’appelle le
+<strong>spread</strong>.</li>
+<li><strong>Ordre au marché</strong> : « achète tout de suite au
+meilleur prix disponible ». Exécuté immédiatement, mais tu paies le
+spread et les frais <em>taker</em>.</li>
+<li><strong>Ordre à cours limité</strong> : « achète seulement à 58 000
+€ ou moins ». Moins cher (frais <em>maker</em>), mais il peut ne jamais
+être exécuté.</li>
+<li><strong>Le glissement (slippage)</strong> : la différence entre le
+prix que tu voyais et le prix obtenu.</li>
+</ul>
+<h2 id="les-frais-le-vrai-adversaire">2.3 Les frais, le vrai
+adversaire</h2>
+<p>Sur Coinbase Advanced, pour un petit volume, les frais <em>taker</em>
+tournent autour de <strong>0,6 % par ordre</strong>, et les frais
+<em>maker</em> autour de 0,4 %. Les barèmes changent : vérifie les tiens
+dans ton compte.</p>
+<p>Un aller-retour (acheter puis revendre) coûte donc environ
+<strong>1,2 %</strong>, plus le glissement. Un bot qui fait 100
+allers-retours par an paie environ 120 % de frais cumulés sur l’argent
+engagé. Il doit gagner <em>énormément</em> juste pour revenir à
+zéro.</p>
+<p><strong>Conséquence : un bon bot amateur trade peu.</strong> Des
+bougies d’une heure ou plus, des signaux rares.</p>
+<h2 id="lapi-et-les-clés">2.4 L’API et les clés</h2>
+<p>L’<strong>API</strong> est la porte d’entrée des programmes sur
+Coinbase. Il y en a deux sortes :</p>
+<ul>
+<li><strong>publique</strong>, sans clé : les prix et les bougies. Le
+backtest et la simulation n’utilisent que celle-là ;</li>
+<li><strong>privée</strong>, avec une clé : ton solde et tes ordres.
+Seul le mode réel en a besoin.</li>
+</ul>
+<p>Règles d’or des clés API :</p>
+<ol type="1">
+<li>Droits <strong>View</strong> et <strong>Trade</strong> seulement.
+<strong>Jamais Transfer</strong> (retraits). Si ta clé fuit, personne ne
+pourra vider ton compte vers l’extérieur.</li>
+<li>La clé va dans un fichier <code>.env</code> qui n’est
+<strong>jamais</strong> partagé, envoyé ou publié (il est dans
+<code>.gitignore</code>).</li>
+<li>Ne colle jamais ta clé dans une conversation, même avec une IA.</li>
+<li>Si tu as un doute, supprime la clé et recrée-en une.</li>
+</ol>
+<h1 id="chapitre-3-construire-le-bot-avec-claude">Chapitre 3 —
+Construire le bot avec Claude</h1>
+<h2 id="la-bonne-méthode">3.1 La bonne méthode</h2>
+<p>Claude peut écrire l’essentiel du code. Ton rôle est de
+<strong>décider</strong>, de <strong>vérifier</strong> et de
+<strong>tester</strong>. La méthode qui marche :</p>
+<ol type="1">
+<li>Une petite étape à la fois. Jamais « fais-moi un bot qui gagne de
+l’argent ».</li>
+<li>Pour chaque étape : tu décris ce que tu veux, Claude écrit le code,
+tu le lances, tu colles le résultat ou l’erreur.</li>
+<li>Tu demandes des <strong>tests</strong> pour chaque morceau
+important.</li>
+<li>Tu demandes à Claude de <strong>chercher les failles</strong> de ton
+propre backtest.</li>
+</ol>
+<h2 id="les-prompts-étape-par-étape">3.2 Les prompts, étape par
+étape</h2>
+<p>Voici l’ordre dans lequel le bot du dossier <code>bot-crypto</code> a
+été construit. Tu peux refaire le chemin.</p>
+<p><strong>Étape 1 — Les données</strong></p>
+<blockquote>
+<p>Écris une fonction Python qui télécharge les bougies d’une heure de
+BTC-EUR depuis l’API publique Coinbase Exchange
+(<code>/products/{id}/candles</code>), sur 2 ans, par paquets de 300
+bougies, avec une pause entre les appels et une gestion de l’erreur 429.
+Renvoie un DataFrame pandas indexé par la date UTC, avec les colonnes
+open, high, low, close, volume, triées et sans doublons.</p>
+</blockquote>
+<p><strong>Étape 2 — Les indicateurs</strong></p>
+<blockquote>
+<p>Écris les fonctions EMA, RSI (méthode de Wilder), ATR, canal de
+Donchian, MACD et bandes de Bollinger. Contrainte : la valeur à
+l’instant t ne doit utiliser que les bougies jusqu’à t. Le Donchian doit
+exclure la bougie en cours. Ajoute un test qui le vérifie.</p>
+</blockquote>
+<p><strong>Étape 3 — Une stratégie</strong></p>
+<blockquote>
+<p>Écris une stratégie de cassure de Donchian : acheter quand la clôture
+dépasse le plus haut des 20 bougies précédentes, et seulement si le prix
+est au-dessus de l’EMA 200 ; revendre quand la clôture passe sous le
+plus bas des 10 bougies précédentes. Renvoie une série de 0 et de 1.</p>
+</blockquote>
+<p><strong>Étape 4 — Le backtest</strong></p>
+<blockquote>
+<p>Écris un backtest bougie par bougie. Le signal calculé à la clôture
+de t est exécuté à l’ouverture de t+1. Compte 0,6 % de frais et 0,05 %
+de glissement par ordre. Ajoute un stop à 3 × ATR, une taille de
+position qui risque 2 % du capital, et un coupe-circuit qui vend tout à
+−20 % depuis le plus haut. Calcule rendement, drawdown max, Sharpe,
+Calmar, nombre de trades, et le rendement d’acheter-et-garder.</p>
+</blockquote>
+<p><strong>Étape 5 — L’avocat du diable</strong></p>
+<blockquote>
+<p>Voici mon backtest. Cherche toutes les façons dont il pourrait me
+mentir : biais d’anticipation, frais oubliés, surapprentissage,
+exécution irréaliste. Écris un test pour chaque faille trouvée.</p>
+</blockquote>
+<p><strong>Étape 6 — La validation</strong></p>
+<blockquote>
+<p>Ajoute une validation hors échantillon : optimise les paramètres sur
+les 70 % premiers des données, puis évalue uniquement sur les 30 %
+restants. Ajoute un test de Monte-Carlo qui rééchantillonne les
+trades.</p>
+</blockquote>
+<p><strong>Étape 7 — Le direct</strong></p>
+<blockquote>
+<p>Écris une boucle qui, une fois par bougie clôturée, récupère les
+données, calcule le signal et passe l’ordre via un objet « broker ».
+Fais deux brokers avec la même interface : un PaperBroker (argent
+fictif, sauvegardé dans un JSON) et un CoinbaseBroker (SDK
+coinbase-advanced-py). La boucle ne doit jamais acheter deux fois sur la
+même bougie et ne doit pas planter sur une erreur réseau.</p>
+</blockquote>
+<h2 id="vérifier-ce-que-claude-écrit">3.3 Vérifier ce que Claude
+écrit</h2>
+<p>Une IA peut se tromper avec beaucoup d’assurance. Trois réflexes
+:</p>
+<ul>
+<li><strong>Lance les tests</strong> : <code>python -m pytest</code>.
+S’ils ne passent pas, colle la sortie à Claude.</li>
+<li><strong>Teste un cas que tu peux calculer à la main.</strong>
+Exemple du projet : marché parfaitement plat, un achat puis une vente
+avec 1 % de frais. Il doit rester exactement 100 × 0,99 × 0,99 = 98,01
+€.</li>
+<li><strong>Méfie-toi des résultats trop beaux.</strong> Un backtest à
++900 % par an contient presque toujours un bug.</li>
+</ul>
+<h1 id="chapitre-4-les-données">Chapitre 4 — Les données</h1>
+<h2 id="les-bougies">4.1 Les bougies</h2>
+<p>Une <strong>bougie</strong> résume les échanges sur une période (une
+minute, une heure, un jour) avec cinq nombres :</p>
+<table>
+<thead>
+<tr class="header">
+<th>Champ</th>
+<th>Sens</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>open</td>
+<td>le prix au début de la période</td>
+</tr>
+<tr class="even">
+<td>high</td>
+<td>le plus haut atteint</td>
+</tr>
+<tr class="odd">
+<td>low</td>
+<td>le plus bas atteint</td>
+</tr>
+<tr class="even">
+<td>close</td>
+<td>le prix à la fin de la période</td>
+</tr>
+<tr class="odd">
+<td>volume</td>
+<td>la quantité échangée</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Le piège de la bougie en cours.</strong> La dernière bougie
+renvoyée par l’API n’est souvent pas terminée : son <code>close</code>
+change encore. Si ton bot décide sur elle, un signal peut apparaître
+puis disparaître. Le projet retire donc toute bougie non clôturée
+(<code>drop_unclosed</code>).</p>
+<p><strong>Quelle taille de bougie ?</strong> Plus elles sont petites,
+plus il y a de signaux, donc de frais et de bruit. Pour débuter, prends
+<strong>1 h</strong> ou plus.</p>
+<h2 id="lema-la-tendance">4.2 L’EMA : la tendance</h2>
+<p>La <strong>moyenne mobile exponentielle</strong> (EMA) lisse les prix
+en donnant plus de poids aux plus récents.</p>
+<ul>
+<li>Prix au-dessus de l’EMA 200 : tendance de fond plutôt
+haussière.</li>
+<li>EMA 20 qui croise l’EMA 50 vers le haut : la tendance courte
+accélère.</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ema(s, period):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s.ewm(span<span class="op">=</span>period, adjust<span class="op">=</span><span class="va">False</span>, min_periods<span class="op">=</span>period).mean()</span></code></pre></div>
+<h2 id="le-rsi-lélan">4.3 Le RSI : l’élan</h2>
+<p>Le <strong>RSI</strong> (Relative Strength Index) va de 0 à 100. Il
+compare la taille des hausses à celle des baisses sur 14 bougies.</p>
+<ul>
+<li>RSI &lt; 30 : le prix a beaucoup baissé récemment (« survendu
+»).</li>
+<li>RSI &gt; 70 : il a beaucoup monté (« suracheté »).</li>
+</ul>
+<p>« Survendu » ne veut pas dire « va remonter ». En pleine chute, le
+RSI peut rester sous 30 longtemps. C’est pour ça qu’on l’associe à un
+filtre de tendance.</p>
+<h2 id="latr-la-nervosité">4.4 L’ATR : la nervosité</h2>
+<p>L’<strong>ATR</strong> (Average True Range) mesure l’amplitude
+moyenne d’une bougie. Ce n’est pas une direction, c’est une
+<strong>volatilité</strong>. C’est l’indicateur le plus utile du bot,
+car il sert à :</p>
+<ul>
+<li>placer le stop assez loin pour ne pas être sorti par le bruit (3 ×
+ATR) ;</li>
+<li>calculer la taille de la position (plus le marché est nerveux, plus
+on achète petit).</li>
+</ul>
+<h1 id="chapitre-5-les-stratégies">Chapitre 5 — Les stratégies</h1>
+<h2 id="écrire-une-règle">5.1 Écrire une règle</h2>
+<p>Une règle de trading doit être <strong>assez précise pour qu’un
+ordinateur l’applique sans hésiter</strong>.</p>
+<ul>
+<li>Mauvais : « acheter quand ça a l’air de repartir ».</li>
+<li>Bon : « acheter à l’ouverture de la bougie suivante si la clôture
+est au-dessus du plus haut des 20 bougies précédentes et au-dessus de
+l’EMA 200 ; revendre si la clôture passe sous le plus bas des 10 bougies
+précédentes ».</li>
+</ul>
+<p>Dans le projet, chaque stratégie renvoie une série de 0 (à plat) et
+de 1 (acheté). C’est tout.</p>
+<h2 id="backtester">5.2 Backtester</h2>
+<p>Un <strong>backtest</strong> rejoue le passé comme si le bot avait
+tourné. Il est utile seulement s’il est réaliste :</p>
+<ol type="1">
+<li><strong>Pas de regard vers le futur.</strong> Une décision prise
+avec la clôture de t est exécutée à l’ouverture de t+1.</li>
+<li><strong>Tous les frais</strong> et un peu de glissement à chaque
+ordre.</li>
+<li><strong>Les stops</strong> sont déclenchés dès que le plus bas de la
+bougie les touche, au prix du stop, ou pire si le marché ouvre en
+dessous.</li>
+<li><strong>Pas de levier</strong>, pas d’argent qui n’existe pas.</li>
+</ol>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> bot.py backtest <span class="at">--strategy</span> donchian</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> bot.py compare</span></code></pre></div>
+<h2 id="lire-les-résultats">5.3 Lire les résultats</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Mesure</th>
+<th>Question à laquelle elle répond</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>rendement</td>
+<td>combien j’ai gagné ou perdu au total ?</td>
+</tr>
+<tr class="even">
+<td>acheter_garder</td>
+<td>combien j’aurais fait sans bot ?</td>
+</tr>
+<tr class="odd">
+<td>max_drawdown</td>
+<td>quelle a été la pire chute depuis un sommet ?</td>
+</tr>
+<tr class="even">
+<td>sharpe</td>
+<td>le rendement vaut-il le stress ?</td>
+</tr>
+<tr class="odd">
+<td>calmar</td>
+<td>rendement annuel ÷ pire chute</td>
+</tr>
+<tr class="even">
+<td>trades</td>
+<td>assez de trades pour que ce ne soit pas de la chance ?</td>
+</tr>
+<tr class="odd">
+<td>profit_factor</td>
+<td>gains totaux ÷ pertes totales (&gt; 1 = gagnant)</td>
+</tr>
+<tr class="even">
+<td>frais_payes</td>
+<td>combien est parti chez l’échange</td>
+</tr>
+</tbody>
+</table>
+<p><strong>La règle de base :</strong> si ton bot ne bat pas « acheter
+et garder » après frais, sur des données qu’il n’a jamais vues, il ne
+sert à rien. Achète et garde, c’est plus simple et c’est gratuit.</p>
+<h2 id="valider-honnêtement">5.4 Valider honnêtement</h2>
+<p>Le plus grand danger est le <strong>surapprentissage</strong> : à
+force d’essayer des réglages, tu finis par trouver celui qui colle
+parfaitement au passé. Par pur hasard.</p>
+<p>La parade : <strong>séparer les données.</strong></p>
+<ul>
+<li>70 % du début : on a le droit d’essayer des réglages (« entraînement
+»).</li>
+<li>30 % de la fin : on ne les regarde <strong>qu’une fois</strong>,
+avec le réglage choisi (« hors échantillon »).</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> bot.py validate <span class="at">--strategy</span> donchian</span></code></pre></div>
+<p>Le verdict du programme est strict. Une stratégie est validée
+seulement si, sur les 30 % jamais vus : elle gagne de l’argent, elle bat
+acheter-et-garder, son profit factor dépasse 1, et elle a fait au moins
+5 trades.</p>
+<p>Si tu relances la validation vingt fois en changeant tout jusqu’à ce
+que ça passe, tu as triché : les 30 % ne sont plus « jamais vus ».</p>
+<h1 id="chapitre-6-les-méthodes-reconnues">Chapitre 6 — Les méthodes
+reconnues</h1>
+<h2 id="la-cassure-de-donchian">6.1 La cassure de Donchian</h2>
+<p>Inventée par Richard Donchian et rendue célèbre par les « Turtle
+Traders » dans les années 1980. Idée : quand le prix dépasse son plus
+haut des N dernières périodes, une tendance commence peut-être.</p>
+<ul>
+<li>Entrée : clôture &gt; plus haut des 20 bougies précédentes.</li>
+<li>Sortie : clôture &lt; plus bas des 10 bougies précédentes.</li>
+</ul>
+<p>Elle perd souvent un peu (fausses cassures) et gagne parfois beaucoup
+(grandes tendances). Le taux de réussite est bas (30 à 40 %), c’est
+normal.</p>
+<h2 id="le-macd">6.2 Le MACD</h2>
+<p>Le MACD est la différence entre une EMA 12 et une EMA 26. On le
+compare à sa propre moyenne (ligne de signal, EMA 9).</p>
+<ul>
+<li>Achat : MACD au-dessus de sa ligne de signal <em>et</em> au-dessus
+de zéro.</li>
+<li>Sortie : MACD repasse sous sa ligne de signal.</li>
+</ul>
+<h2 id="les-bandes-de-bollinger">6.3 Les bandes de Bollinger</h2>
+<p>Une moyenne sur 20 bougies, plus et moins 2 écarts-types. Les bandes
+s’écartent quand le marché s’agite.</p>
+<ul>
+<li>Version « rebond » (dans le projet) : acheter sous la bande basse,
+revendre au retour à la moyenne.</li>
+<li>Version « cassure » : acheter au-dessus de la bande haute. À toi de
+l’écrire avec Claude, c’est un bon exercice.</li>
+</ul>
+<h2 id="les-filtres">6.4 Les filtres</h2>
+<p>Un filtre ne crée pas de signal, il en <strong>supprime</strong>.
+C’est souvent ce qui améliore le plus une stratégie.</p>
+<ul>
+<li><strong>Filtre de tendance</strong> : n’acheter que si le prix est
+au-dessus de l’EMA 200 (<code>trend_filter</code>). En crypto, la
+plupart des grosses pertes arrivent quand on achète dans un marché
+baissier.</li>
+<li><strong>Filtre de volume</strong> : n’acheter que si le volume
+dépasse 1,2 fois sa moyenne (<code>volume_filter</code>). Une cassure
+sans volume est souvent une fausse cassure.</li>
+</ul>
+<h2 id="le-ratio-de-sharpe">6.5 Le ratio de Sharpe</h2>
+<p>Rendement moyen ÷ volatilité, ramené à l’année. Il répond à : «
+est-ce que je suis payé pour les secousses ? »</p>
+<ul>
+<li>&lt; 0 : tu perds de l’argent.</li>
+<li>0 à 1 : médiocre.</li>
+<li>1 à 2 : bon.</li>
+<li><blockquote>
+<p>3 en backtest : méfiance, cherche le bug.</p>
+</blockquote></li>
+</ul>
+<h2 id="le-ratio-de-calmar">6.6 Le ratio de Calmar</h2>
+<p>Rendement annuel ÷ pire chute (drawdown max). Un Calmar de 1 veut
+dire : « en un an, je gagne autant que ce que j’ai perdu dans ma pire
+période ». C’est la mesure que le projet utilise pour choisir les
+réglages, parce qu’elle pénalise les stratégies qui te font vivre des
+chutes insupportables.</p>
+<h2 id="le-test-de-monte-carlo">6.7 Le test de Monte-Carlo</h2>
+<p>Ton backtest a produit une suite de trades dans un certain ordre.
+Mais cet ordre est en partie dû à la chance. Le test de Monte-Carlo
+<strong>mélange</strong> les trades des milliers de fois (avec remise)
+et regarde ce qui aurait pu arriver :</p>
+<ul>
+<li>le rendement médian ;</li>
+<li>le rendement des 5 % de scénarios les plus mauvais ;</li>
+<li>la probabilité de finir en perte ;</li>
+<li>le drawdown des 5 % de scénarios les plus mauvais.</li>
+</ul>
+<p>Si 5 % des scénarios font −40 %, prépare-toi à vivre −40 % un jour.
+Si ça t’est insupportable, réduis la taille des positions.</p>
+<h1 id="chapitre-7-le-direct">Chapitre 7 — Le direct</h1>
+<h2 id="la-gestion-du-risque">7.1 La gestion du risque</h2>
+<p>C’est le chapitre le plus important. Une stratégie moyenne avec une
+bonne gestion du risque survit. Une bonne stratégie avec une mauvaise
+gestion du risque finit par tout perdre.</p>
+<p>Les quatre protections du bot :</p>
+<ol type="1">
+<li><strong>Le stop ATR.</strong> À l’achat, le bot note un prix de stop
+à 3 × ATR sous le prix d’entrée. Si le prix le touche, il vend. Après un
+stop, il attend que le signal s’éteigne puis se rallume avant de
+racheter.</li>
+<li><strong>La taille de position.</strong> Le bot achète une quantité
+telle que, si le stop est touché, la perte soit d’environ 2 % du
+capital. Marché calme : position plus grosse. Marché nerveux : position
+plus petite.</li>
+<li><strong>Le coupe-circuit.</strong> Si le capital baisse de 20 %
+depuis son plus haut, le bot vend tout et <strong>s’arrête</strong>. Il
+ne redémarre pas tant que tu n’as pas supprimé son fichier d’état. C’est
+voulu : un humain doit comprendre ce qui s’est passé.</li>
+<li><strong>Le montant maximum par ordre</strong>
+(<code>max_order</code>), au cas où un bug calculerait une taille
+absurde.</li>
+</ol>
+<h2 id="la-simulation-paper-trading">7.2 La simulation (paper
+trading)</h2>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> bot.py paper</span></code></pre></div>
+<p>Le bot tourne en direct sur les vrais prix, avec 100 €
+<strong>fictifs</strong> et les mêmes frais que le réel. Il écrit chaque
+décision dans <code>state/journal_paper.csv</code>.</p>
+<p>Laisse-le tourner <strong>au moins quatre semaines</strong>. Tu
+vérifies trois choses :</p>
+<ul>
+<li>il fait ce que le backtest prévoyait (même genre de signaux, même
+fréquence) ;</li>
+<li>il survit aux coupures réseau, aux redémarrages, aux mises en veille
+de l’ordinateur ;</li>
+<li>tu supportes émotionnellement ses pertes.</li>
+</ul>
+<h2 id="passer-en-réel">7.3 Passer en réel</h2>
+<p>Seulement si la validation est passée <strong>et</strong> que la
+simulation s’est bien déroulée :</p>
+<ol type="1">
+<li>Crée une clé API Coinbase (droits View + Trade, jamais
+Transfer).</li>
+<li>Copie <code>.env.example</code> en <code>.env</code> et
+remplis-le.</li>
+<li>Commence avec une petite somme et un <code>max_order</code>
+bas.</li>
+<li><code>python bot.py live --yes-real-money</code></li>
+</ol>
+<p>Pour qu’il tourne 24 h/24, il faut une machine allumée en permanence
+: un vieux PC, un Raspberry Pi, ou un petit serveur loué. Sur Linux,
+<code>tmux</code> ou un service <code>systemd</code> permet de le garder
+actif après déconnexion.</p>
+<h2 id="le-suivi">7.4 Le suivi</h2>
+<p>Chaque jour, deux minutes :</p>
+<ul>
+<li>regarde la fin de <code>bot.log</code> : le bot tourne-t-il ? y
+a-t-il des erreurs ?</li>
+<li>regarde <code>state/journal_live.csv</code> : les achats et ventes
+ont-ils un sens ?</li>
+<li>compare le solde réel sur Coinbase avec ce que le bot croit
+avoir.</li>
+</ul>
+<p>Chaque mois : compare la performance du bot à « acheter et garder »
+sur la même période.</p>
+<h2 id="le-dépannage">7.5 Le dépannage</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Symptôme</th>
+<th>Cause probable</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ModuleNotFoundError</code></td>
+<td>environnement virtuel non activé</td>
+<td><code>source .venv/bin/activate</code> puis
+<code>pip install -r requirements.txt</code></td>
+</tr>
+<tr class="even">
+<td><code>python</code> introuvable (Windows)</td>
+<td>PATH non coché</td>
+<td>réinstaller Python en cochant « Add to PATH »</td>
+</tr>
+<tr class="odd">
+<td>erreur 429</td>
+<td>trop de requêtes</td>
+<td>le code patiente déjà ; augmente <code>poll_seconds</code></td>
+</tr>
+<tr class="even">
+<td>erreur 401 en réel</td>
+<td>clé mal copiée</td>
+<td>vérifie les <code>\n</code> du secret dans <code>.env</code>, ou
+recrée la clé</td>
+</tr>
+<tr class="odd">
+<td>« INSUFFICIENT_FUND »</td>
+<td>solde trop faible ou frais non prévus</td>
+<td>baisse <code>max_order</code></td>
+</tr>
+<tr class="even">
+<td>« arrêté (coupe-circuit) »</td>
+<td>−20 % atteint</td>
+<td>analyse le journal, puis supprime
+<code>state/state_live.json</code></td>
+</tr>
+<tr class="odd">
+<td>le bot ne trade jamais</td>
+<td>filtres trop stricts, ou marché baissier</td>
+<td>normal sous l’EMA 200 ; vérifie avec <code>backtest</code></td>
+</tr>
+<tr class="even">
+<td>résultats paper ≠ backtest</td>
+<td>bougie en cours utilisée, frais différents</td>
+<td>vérifie <code>drop_unclosed</code> et tes frais réels</td>
+</tr>
+</tbody>
+</table>
+<h1 id="chapitre-8-le-bilan">Chapitre 8 — Le bilan</h1>
+<h2 id="les-vrais-résultats">8.1 Les vrais résultats</h2>
+<p>Voici ce qu’affiche la commande
+<code>python bot.py compare --demo</code>, sur un <strong>marché
+synthétique</strong> (une marche aléatoire générée par ordinateur, en
+baisse de 43 % sur la période). Ce n’est pas le vrai bitcoin, et ces
+chiffres ne disent rien du vrai marché. Ils montrent ce que le bot sait
+mesurer :</p>
+<table>
+<thead>
+<tr class="header">
+<th>Stratégie</th>
+<th>Rendement</th>
+<th>Acheter et garder</th>
+<th>Drawdown max</th>
+<th>Trades</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ema_cross</td>
+<td>−20,4 %</td>
+<td>−43,2 %</td>
+<td>−20,4 %</td>
+<td>19</td>
+</tr>
+<tr class="even">
+<td>rsi_dip</td>
+<td>−3,6 %</td>
+<td>−43,2 %</td>
+<td>−5,7 %</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>donchian</td>
+<td>−20,3 %</td>
+<td>−43,2 %</td>
+<td>−20,3 %</td>
+<td>21</td>
+</tr>
+<tr class="even">
+<td>macd</td>
+<td>−20,8 %</td>
+<td>−43,2 %</td>
+<td>−20,8 %</td>
+<td>30</td>
+</tr>
+<tr class="odd">
+<td>bollinger</td>
+<td>−19,6 %</td>
+<td>−43,2 %</td>
+<td>−20,3 %</td>
+<td>21</td>
+</tr>
+</tbody>
+</table>
+<p>Ce que ce tableau enseigne :</p>
+<ul>
+<li><strong>Sur un marché sans vraie tendance, aucune stratégie ne
+gagne.</strong> Ici, le hasard plus 1,2 % de frais par aller-retour
+suffit à tout faire perdre.</li>
+<li><strong>Le coupe-circuit fait son travail.</strong> Les pertes
+s’arrêtent vers −20 % au lieu de −43 %.</li>
+<li><strong>« Perdre moins que le marché » n’est pas « gagner
+».</strong> La validation stricte rejette ces stratégies, et elle a
+raison.</li>
+</ul>
+<p><strong>Tes résultats.</strong> Lance maintenant
+<code>python bot.py compare</code> puis
+<code>python bot.py validate</code> sur les vraies données de Coinbase.
+Note les chiffres dans ton carnet, <strong>datés</strong>. Ils dépendent
+de la période : une stratégie de tendance brille pendant une grande
+hausse et souffre dans un marché qui tourne en rond. C’est pour ça qu’on
+teste sur deux ans, et qu’on revalide tous les trois mois.</p>
+<h2 id="les-erreurs-à-éviter">8.2 Les erreurs à éviter</h2>
+<ol type="1">
+<li><strong>Oublier les frais.</strong> C’est l’erreur qui transforme un
+bot « gagnant » en bot perdant.</li>
+<li><strong>Le biais d’anticipation.</strong> Utiliser une information
+du futur, même d’une seule bougie. Exemple classique : un Donchian qui
+inclut la bougie en cours.</li>
+<li><strong>Le surapprentissage.</strong> Trouver le réglage parfait
+pour le passé. Il ne marchera pas demain.</li>
+<li><strong>Juger sur trois jours.</strong> Il faut des dizaines de
+trades et plusieurs mois.</li>
+<li><strong>Ne pas se comparer à « acheter et garder ».</strong></li>
+<li><strong>Trader trop souvent.</strong> Bougies de 1 minute, 50 trades
+par jour : les frais gagnent.</li>
+<li><strong>Augmenter la mise après des gains</strong>, ou pire, après
+des pertes « pour se refaire ».</li>
+<li><strong>Donner le droit de retrait à la clé API.</strong></li>
+<li><strong>Désactiver le coupe-circuit</strong> « juste cette fois
+».</li>
+<li><strong>Croire une vidéo</strong> qui montre un bot doubler en deux
+jours.</li>
+</ol>
+<h2 id="la-checklist-complète">8.3 La checklist complète</h2>
+<p><strong>Installation</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Python 3.12+ installé,
+<code>python --version</code> fonctionne</label></li>
+<li><label><input type="checkbox" />VS Code + extension
+Python</label></li>
+<li><label><input type="checkbox" />Environnement virtuel créé et
+activé</label></li>
+<li><label><input
+type="checkbox" /><code>pip install -r requirements.txt</code> sans
+erreur</label></li>
+<li><label><input type="checkbox" /><code>python -m pytest</code> : tous
+les tests passent</label></li>
+</ul>
+<p><strong>Backtest</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Au moins 2 ans de
+données</label></li>
+<li><label><input type="checkbox" />Frais réels de ton compte saisis
+dans <code>config.json</code></label></li>
+<li><label><input type="checkbox" />Décision à la clôture, exécution à
+la bougie suivante</label></li>
+<li><label><input type="checkbox" />Comparaison avec
+acheter-et-garder</label></li>
+<li><label><input type="checkbox" />Au moins 30 trades sur la période
+complète</label></li>
+</ul>
+<p><strong>Validation</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Réglages choisis sur 70 % des
+données uniquement</label></li>
+<li><label><input type="checkbox" />Hors échantillon : rendement &gt; 0,
+bat acheter-et-garder, profit factor &gt; 1</label></li>
+<li><label><input type="checkbox" />Monte-Carlo : le pire scénario à 5 %
+est supportable pour toi</label></li>
+<li><label><input type="checkbox" />Tu n’as pas relancé la validation
+jusqu’à ce qu’elle passe</label></li>
+</ul>
+<p><strong>Simulation</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Au moins 4 semaines de
+<code>paper</code></label></li>
+<li><label><input type="checkbox" />Les signaux ressemblent à ceux du
+backtest</label></li>
+<li><label><input type="checkbox" />Le bot a survécu à au moins une
+coupure réseau et un redémarrage</label></li>
+</ul>
+<p><strong>Réel</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Clé API sans droit de
+retrait</label></li>
+<li><label><input type="checkbox" /><code>.env</code> jamais partagé ni
+publié</label></li>
+<li><label><input type="checkbox" />Petite somme de départ,
+<code>max_order</code> bas</label></li>
+<li><label><input type="checkbox" />Coupe-circuit actif
+(<code>kill_drawdown</code>)</label></li>
+<li><label><input type="checkbox" />Suivi quotidien du journal, bilan
+mensuel contre acheter-et-garder</label></li>
+</ul>
+<h2 id="le-mot-de-la-fin">8.4 Le mot de la fin</h2>
+<p>Un bon bot, c’est surtout un bot honnête avec lui-même : il compte
+tous les frais, il se teste sur des données jamais vues et il se compare
+à « acheter et garder ». S’il ne passe pas ces trois épreuves, le
+meilleur trade est de ne pas le lancer. Et tu auras quand même appris à
+coder, à lire un marché et à te méfier des promesses trop belles.</p>
+<h1 id="annexe-fiscalité-et-cadre-légal-france">Annexe — Fiscalité et
+cadre légal (France)</h1>
+<ul>
+<li>Les plus-values sur cryptoactifs réalisées par un particulier sont
+en principe imposables lors d’une conversion en euros (ou d’un achat de
+bien), via le formulaire 2086. Un échange crypto contre crypto n’est en
+général pas imposable pour un particulier.</li>
+<li>Les comptes ouverts sur des plateformes étrangères doivent être
+déclarés (formulaire 3916-bis).</li>
+<li>Une activité de trading très fréquente peut être requalifiée en
+activité professionnelle.</li>
+<li>Ces règles évoluent. Vérifie sur impots.gouv.fr ou auprès d’un
+professionnel avant ta déclaration.</li>
+<li>Vérifie aussi que la plateforme utilisée est bien autorisée à
+fournir ses services en France (liste des prestataires sur le site de
+l’AMF).</li>
+</ul>
+</body>
+</html>

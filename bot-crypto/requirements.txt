@@ -1,0 +1,6 @@
+pandas>=2.0
+numpy>=1.24
+requests>=2.31
+# Uniquement pour le mode réel (ordres sur Coinbase Advanced Trade) :
+coinbase-advanced-py>=1.8
+pytest>=8.0
