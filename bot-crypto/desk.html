@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Desk Bot Crypto</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout : un « poste de pilotage » vertical, lisible au téléphone (format vidéo 9:16), 2 colonnes sur grand écran. */
+:root{
+  --bg:#0a0c10; --panel:#11151c; --panel2:#161b24; --line:#222a36;
+  --fg:#eef1f6; --muted:#8b95a7; --accent:#4fd1a5; --hold:#9aa7ff;
+  --good:#4fd1a5; --bad:#ff6b6b; --warn:#ffb547;
+  --display:"Space Grotesk",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 var(--body)}
+.wrap{max-width:1120px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:18px}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:6px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.badge.sim{color:var(--warn);border-color:#ffb54755;background:#ffb54712}
+.badge.src.real{color:var(--good);border-color:#4fd1a555}
+.badge.src.fake{color:var(--bad);border-color:#ff6b6b55;background:#ff6b6b12}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{background:transparent;color:var(--muted);border:0;padding:8px 11px;font:500 13px var(--body);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--panel2);color:var(--fg)}
+select,.btn{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:8px 11px;font:500 13px var(--body);cursor:pointer}
+.btn.primary{background:var(--accent);color:#06140e;border-color:var(--accent);font-weight:700}
+button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;align-items:start}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.label{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.balance{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px}
+.big{font:700 52px/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:8px}
+.delta{font:600 15px var(--mono);margin-top:6px}
+.up{color:var(--good)} .down{color:var(--bad)}
+.vs{text-align:right}
+.vs .v{font:600 20px var(--mono);font-variant-numeric:tabular-nums;color:var(--hold);margin-top:6px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.stat{background:var(--panel2);border-radius:10px;padding:9px 10px}
+.stat b{display:block;font:600 15px var(--mono);font-variant-numeric:tabular-nums;margin-top:4px}
+canvas{display:block;width:100%;height:220px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.agents{display:grid;grid-template-columns:1fr;gap:8px}
+.agent{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;background:var(--panel2);border:1px solid transparent;border-radius:12px;padding:10px 12px;transition:border-color .3s}
+.agent.flash{border-color:var(--accent)}
+.agent.alert{border-color:var(--bad)}
+.agent .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font:700 13px var(--mono);color:#0a0c10}
+.agent .nm{font-weight:600}.agent .rl{color:var(--muted);font-size:12px;margin-left:6px}
+.agent .st{color:var(--muted);font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.agent .ct{font:600 12px var(--mono);color:var(--muted)}
+.pos{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.prow{display:grid;grid-template-columns:1fr auto auto;gap:10px;font:13px var(--mono);font-variant-numeric:tabular-nums;background:var(--panel2);border-radius:10px;padding:8px 10px}
+.empty{color:var(--muted);font-size:13px;margin-top:10px}
+.log{font:12px/1.55 var(--mono);max-height:300px;overflow:auto;margin-top:10px;display:flex;flex-direction:column;gap:2px}
+.log div{flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.log .t{color:var(--muted)} .tag{font-weight:600}
+.recap{border-color:var(--accent)}
+.recap h2{font:700 20px var(--display);margin:0 0 6px;text-wrap:balance}
+.recap p{margin:0;color:var(--muted);max-width:65ch}
+.note{color:var(--muted);font-size:12px;max-width:80ch}
+.clock{font:600 13px var(--mono);color:var(--muted)}
+@media (max-width:860px){.grid{grid-template-columns:1fr}.big{font-size:44px}.stats{grid-template-columns:repeat(2,1fr)}}
+@media (prefers-reduced-motion:reduce){.agent{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><span class="dot"></span>Desk · 6 agents</div>
+    <div class="badges">
+      <span class="badge sim">Simulation · argent fictif</span>
+      <span class="badge src" id="src">Chargement…</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Mode">
+      <button id="m-replay" aria-pressed="true">Rejouer 30 jours</button>
+      <button id="m-live" aria-pressed="false">Direct</button>
+    </div>
+    <select id="strat" aria-label="Stratégie">
+      <option value="donchian">Cassure de Donchian 20/10</option>
+      <option value="ema">Croisement EMA 20/50</option>
+    </select>
+    <select id="speed" aria-label="Vitesse">
+      <option value="1">Lent</option>
+      <option value="5" selected>Normal</option>
+      <option value="25">Rapide</option>
+    </select>
+    <button class="btn primary" id="play">Lancer</button>
+    <button class="btn" id="reset">Recommencer</button>
+    <span class="clock" id="clock"></span>
+  </div>
+
+  <div class="grid">
+    <div class="col">
+      <div class="panel">
+        <div class="balance">
+          <div>
+            <div class="label">Capital du bot</div>
+            <div class="big" id="eq">100,00 €</div>
+            <div class="delta" id="eqd">+0,00 € (0,0 %)</div>
+          </div>
+          <div class="vs">
+            <div class="label">Acheter et garder</div>
+            <div class="v" id="bh">100,00 €</div>
+            <div class="delta" id="bhd" style="color:var(--muted)">même panier, sans bot</div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><span class="label">Trades</span><b id="s-tr">0</b></div>
+          <div class="stat"><span class="label">Gagnants</span><b id="s-win">–</b></div>
+          <div class="stat"><span class="label">Frais payés</span><b id="s-fee">0,00 €</b></div>
+          <div class="stat"><span class="label">Pire chute</span><b id="s-dd">0,0 %</b></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="label">Courbe du capital</div>
+        <canvas id="chart" aria-label="Courbe du capital du bot comparée à acheter et garder"></canvas>
+        <div class="legend"><span><i style="background:var(--accent)"></i>Bot</span><span><i style="background:var(--hold)"></i>Acheter et garder</span><span><i style="background:var(--line)"></i>Départ 100 €</span></div>
+      </div>
+
+      <div class="panel recap" id="recap" hidden>
+        <h2 id="recap-h"></h2>
+        <p id="recap-p"></p>
+      </div>
+
+      <div class="panel">
+        <div class="label">Positions ouvertes</div>
+        <div class="pos" id="pos"></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="panel">
+        <div class="label">Les agents</div>
+        <div class="agents" id="agents" style="margin-top:10px"></div>
+      </div>
+      <div class="panel">
+        <div class="label">Journal</div>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">Simulation : aucun ordre réel n'est passé. Frais de 0,6 % et glissement de 0,05 % comptés à chaque ordre. Décision à la clôture d'une bougie, exécution à l'ouverture de la suivante. Stop à 3 × ATR, 2 % du capital risqué par trade, coupe-circuit à −20 %. Contenu éducatif, pas un conseil en investissement.</p>
+</div>
+
+<script>
+"use strict";
+const PAIRS = ["BTC-EUR","ETH-EUR","SOL-EUR","XRP-EUR","ADA-EUR","DOGE-EUR"];
+const CFG = { capital:100, fee:0.006, slip:0.0005, atrStop:3, risk:0.02, maxPerPair:0.34, kill:0.20, warm:210 };
+const API = "https://api.exchange.coinbase.com";
+const eur = new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"});
+const pctf = x => (x>=0?"+":"") + (x*100).toLocaleString("fr-FR",{minimumFractionDigits:1,maximumFractionDigits:1}) + " %";
+const px = p => p.toLocaleString("fr-FR",{maximumFractionDigits: p>=100?0 : p>=1?2 : 4}) + " €";
+const dfmt = new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+const $ = id => document.getElementById(id);
+
+/* ---------- Indicateurs (identiques au code Python du bot) ---------- */
+function ema(x,p){const a=2/(p+1),o=new Array(x.length);let e=x[0];for(let i=0;i<x.length;i++){e=i?a*x[i]+(1-a)*e:x[0];o[i]=i>=p-1?e:NaN}return o}
+function atr(h,l,c,p=14){const a=1/p,o=new Array(c.length);let e;for(let i=0;i<c.length;i++){const tr=i?Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])):h[i]-l[i];e=i?a*tr+(1-a)*e:tr;o[i]=i>=p-1?e:NaN}return o}
+function donch(arr,p,fn){const o=new Array(arr.length).fill(NaN);for(let i=p;i<arr.length;i++){let m=arr[i-p];for(let k=i-p+1;k<i;k++)m=fn(m,arr[k]);o[i]=m}return o}
+function rsi(c,p=14){const a=1/p,o=new Array(c.length).fill(NaN);let g=0,l=0;for(let i=1;i<c.length;i++){const d=c[i]-c[i-1];g=i>1?a*Math.max(d,0)+(1-a)*g:Math.max(d,0);l=i>1?a*Math.max(-d,0)+(1-a)*l:Math.max(-d,0);if(i>=p)o[i]=l===0?100:100-100/(1+g/l)}return o}
+
+function prepare(s){
+  s.ema200=ema(s.c,200); s.atr=atr(s.h,s.l,s.c); s.rsi=rsi(s.c);
+  s.up20=donch(s.h,20,Math.max); s.lo10=donch(s.l,10,Math.min);
+  s.ema20=ema(s.c,20); s.ema50=ema(s.c,50); s.vma=ema(s.v,20);
+}
+
+/* ---------- Données ---------- */
+async function fetchPair(pair, gran, n){
+  const out=[]; let end=Math.floor(Date.now()/1000);
+  while(out.length<n){
+    const start=end-gran*300;
+    const r=await fetch(`${API}/products/${pair}/candles?granularity=${gran}&start=${new Date(start*1000).toISOString()}&end=${new Date(end*1000).toISOString()}`);
+    if(!r.ok) throw new Error(pair+" HTTP "+r.status);
+    const rows=await r.json(); if(!rows.length) break;
+    out.push(...rows); end=start; await new Promise(z=>setTimeout(z,120));
+  }
+  const m=new Map(); for(const r of out) m.set(r[0],r);
+  return [...m.values()].sort((a,b)=>a[0]-b[0]); // [time, low, high, open, close, volume]
+}
+function align(raw, gran){
+  // garde uniquement les horodatages présents pour toutes les paires, et retire la bougie en cours
+  const now=Date.now()/1000; let common=null;
+  for(const p of PAIRS){const ts=new Set(raw[p].filter(r=>r[0]+gran<=now).map(r=>r[0]));common=common?new Set([...common].filter(t=>ts.has(t))):ts}
+  const times=[...common].sort((a,b)=>a-b); const S={};
+  for(const p of PAIRS){const m=new Map(raw[p].map(r=>[r[0],r]));const s={t:[],o:[],h:[],l:[],c:[],v:[]};
+    for(const t of times){const r=m.get(t);s.t.push(t*1000);s.l.push(r[1]);s.h.push(r[2]);s.o.push(r[3]);s.c.push(r[4]);s.v.push(r[5])}
+    prepare(s); S[p]=s}
+  return S;
+}
+function synthetic(n){
+  let seed=11; const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+  const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+  const start={"BTC-EUR":60000,"ETH-EUR":2500,"SOL-EUR":120,"XRP-EUR":0.9,"ADA-EUR":0.5,"DOGE-EUR":0.15};
+  const t0=Date.now()-n*3600e3, S={}; const mkt=[]; let reg=0;
+  for(let i=0;i<n;i++){if(i%150===0)reg=[-1,0,1][Math.floor(rnd()*3)];mkt.push(0.0003*reg+0.006*gauss())}
+  for(const p of PAIRS){const s={t:[],o:[],h:[],l:[],c:[],v:[]};let c=start[p];
+    for(let i=0;i<n;i++){const r=mkt[i]*1.2+0.005*gauss();const o=c;c=o*Math.exp(r);const sp=Math.abs(gauss())*0.003*c;
+      s.t.push(t0+i*3600e3);s.o.push(o);s.c.push(c);s.h.push(Math.max(o,c)+sp);s.l.push(Math.min(o,c)-sp);s.v.push(100*(1+20*Math.abs(r)))}
+    prepare(s);S[p]=s}
+  return S;
+}
+
+/* ---------- Moteur de simulation ---------- */
+const AG=[
+  {k:"scout",n:"Scout",r:"données",c:"#7cc4ff"},{k:"filter",n:"Filtre",r:"tendance",c:"#c9a6ff"},
+  {k:"analyst",n:"Analyste",r:"signal",c:"#ffd166"},{k:"risk",n:"Risque",r:"protection",c:"#ff8fa3"},
+  {k:"exec",n:"Exécution",r:"ordres",c:"#4fd1a5"},{k:"logger",n:"Journal",r:"suivi",c:"#b8c2d6"}];
+let E; // état
+function newState(S, startIdx){
+  const n=S[PAIRS[0]].t.length;
+  const st={S,n,i:startIdx,start:startIdx,cash:CFG.capital,pos:{},sig:{},wait:{},peak:CFG.capital,halted:false,
+    trades:[],fees:0,maxdd:0,curve:[],bhCurve:[],bhQty:{},agents:{},counts:{},strategy:$("strat").value};
+  for(const p of PAIRS){st.sig[p]=0;st.wait[p]=false}
+  // signaux calculés sur l'historique de chauffe (sans trader)
+  for(let k=0;k<startIdx;k++)updateSignals(st,k);
+  // acheter et garder : même panier, réparti à parts égales au départ, frais compris
+  for(const p of PAIRS){const s=S[p];const price=s.o[startIdx]*(1+CFG.slip);st.bhQty[p]=CFG.capital/PAIRS.length*(1-CFG.fee)/price}
+  return st;
+}
+function updateSignals(st,i){
+  for(const p of PAIRS){const s=st.S[p];
+    let entry,exit;
+    if(st.strategy==="ema"){entry=s.ema20[i]>s.ema50[i]&&s.c[i]>s.ema200[i];exit=s.ema20[i]<s.ema50[i]}
+    else{entry=s.c[i]>s.up20[i]&&s.c[i]>s.ema200[i];exit=s.c[i]<s.lo10[i]}
+    if(st.sig[p]===0&&entry)st.sig[p]=1;else if(st.sig[p]===1&&exit)st.sig[p]=0}
+}
+function equityAt(st,i){let e=st.cash;for(const p in st.pos)e+=st.pos[p].qty*st.S[p].c[i];return e}
+function sell(st,p,price,i,reason){
+  const ps=st.pos[p];const fill=price*(1-CFG.slip);const gross=ps.qty*fill;const fee=gross*CFG.fee;
+  st.cash+=gross-fee;st.fees+=fee;const pnl=gross-fee-ps.cost;
+  st.trades.push({p,pnl,ret:pnl/ps.cost,reason});delete st.pos[p];
+  return {fill,fee,pnl};
+}
+function step(st){
+  const i=st.i,S=st.S,t=S[PAIRS[0]].t[i],ev=[];
+  if(!st.halted){
+    const eqPrev=equityAt(st,i-1);
+    for(const p of PAIRS){const s=S[p],want=st.sig[p];
+      if(want===0)st.wait[p]=false;
+      if(!st.pos[p]&&want===1&&!st.wait[p]&&!isNaN(s.atr[i-1])){
+        const fill=s.o[i]*(1+CFG.slip),dist=CFG.atrStop*s.atr[i-1]/fill;
+        const frac=Math.min(CFG.maxPerPair,CFG.risk/Math.max(dist,1e-9));
+        const spend=Math.min(eqPrev*frac,st.cash);
+        if(spend>=1){const fee=spend*CFG.fee;st.cash-=spend;st.fees+=fee;
+          st.pos[p]={qty:(spend-fee)/fill,entry:fill,cost:spend,stop:fill-CFG.atrStop*s.atr[i-1]};
+          ev.push({a:"exec",kind:"buy",p,txt:`Achat ${p.split("-")[0]} ${eur.format(spend)} à ${px(fill)}`,detail:`frais ${eur.format(fee)} · stop ${px(st.pos[p].stop)}`})}
+      }else if(st.pos[p]&&want===0){const r=sell(st,p,s.o[i],i,"signal");
+        ev.push({a:"exec",kind:r.pnl>=0?"win":"loss",p,txt:`Vente ${p.split("-")[0]} à ${px(r.fill)}`,detail:`${r.pnl>=0?"+":""}${eur.format(r.pnl)} · fin du signal`})}
+      if(st.pos[p]&&s.l[i]<=st.pos[p].stop){const r=sell(st,p,Math.min(s.o[i],st.pos[p].stop),i,"stop");st.wait[p]=true;
+        ev.push({a:"risk",kind:"loss",p,txt:`Stop touché sur ${p.split("-")[0]}`,detail:`${eur.format(r.pnl)} · on attend un nouveau signal`})}
+    }
+  }
+  updateSignals(st,i);
+  let eq=equityAt(st,i);st.peak=Math.max(st.peak,eq);
+  const dd=eq/st.peak-1;st.maxdd=Math.min(st.maxdd,dd);
+  if(!st.halted&&eq<=st.peak*(1-CFG.kill)){
+    for(const p of Object.keys(st.pos))sell(st,p,S[p].c[i],i,"coupe-circuit");
+    st.halted=true;eq=st.cash;
+    ev.push({a:"risk",kind:"loss",p:"",txt:"COUPE-CIRCUIT : −20 % depuis le plus haut",detail:"tout est vendu, le bot s'arrête"})}
+  let bh=0;for(const p of PAIRS)bh+=st.bhQty[p]*S[p].c[i]*(1-CFG.fee);
+  st.curve.push(eq);st.bhCurve.push(bh);st.i++;
+  return {t,eq,bh,ev,dd};
+}
+
+/* ---------- Affichage ---------- */
+function buildAgents(){const box=$("agents");box.textContent="";
+  for(const a of AG){const d=document.createElement("div");d.className="agent";d.id="ag-"+a.k;
+    d.innerHTML=`<div class="ic" style="background:${a.c}">${a.n.slice(0,2).toUpperCase()}</div><div style="min-width:0"><div><span class="nm"></span><span class="rl"></span></div><div class="st"></div></div><div class="ct"></div>`;
+    d.querySelector(".nm").textContent=a.n;d.querySelector(".rl").textContent=a.r;d.querySelector(".st").textContent="en attente";box.appendChild(d)}}
+function agent(k,text,count,state){const d=$("ag-"+k);d.querySelector(".st").textContent=text;if(count!==undefined)d.querySelector(".ct").textContent=count;
+  if(state){d.classList.remove("flash","alert");void d.offsetWidth;d.classList.add(state);clearTimeout(d._t);d._t=setTimeout(()=>d.classList.remove(state),900)}}
+function logLine(t,tag,color,text){const box=$("log");const d=document.createElement("div");
+  const a=document.createElement("span");a.className="t";a.textContent=dfmt.format(t)+" ";
+  const b=document.createElement("span");b.className="tag";b.style.color=color;b.textContent=tag+" ";
+  const c=document.createElement("span");c.textContent=text;d.append(a,b,c);box.prepend(d);while(box.children.length>60)box.lastChild.remove()}
+
+function render(r){
+  const st=E,S=st.S,i=st.i-1;
+  $("clock").textContent=dfmt.format(r.t);
+  $("eq").textContent=eur.format(r.eq);
+  const d=r.eq-CFG.capital;$("eqd").textContent=`${d>=0?"+":""}${eur.format(d)} (${pctf(d/CFG.capital)})`;$("eqd").className="delta "+(d>=0?"up":"down");
+  $("bh").textContent=eur.format(r.bh);$("bhd").textContent=pctf(r.bh/CFG.capital-1)+" · même panier, sans bot";
+  const wins=st.trades.filter(x=>x.pnl>0).length;
+  $("s-tr").textContent=st.trades.length;$("s-win").textContent=st.trades.length?`${wins}/${st.trades.length}`:"–";
+  $("s-fee").textContent=eur.format(st.fees);$("s-dd").textContent=pctf(st.maxdd);
+  // agents
+  const btc=S["BTC-EUR"];agent("scout",`6 paires · BTC ${px(btc.c[i])}`,`#${st.i-st.start}`);
+  const above=PAIRS.filter(p=>S[p].c[i]>S[p].ema200[i]);
+  agent("filter",above.length?`${above.length}/6 au-dessus de l'EMA 200 : ${above.map(p=>p.split("-")[0]).join(", ")}`:"aucune paire en tendance haussière : on ne fait rien",`${above.length}/6`);
+  const on=PAIRS.filter(p=>st.sig[p]===1);
+  agent("analyst",on.length?`signal acheteur : ${on.map(p=>p.split("-")[0]).join(", ")}`:`aucun signal · RSI BTC ${btc.rsi[i].toFixed(0)}`,on.length?(on.length>1?`${on.length} signaux`:"1 signal"):"–");
+  if(!r.ev.some(e=>e.a==="risk"))agent("risk",st.halted?"coupe-circuit déclenché, bot arrêté":`chute actuelle ${pctf(r.dd)} · limite −20 %`,Object.keys(st.pos).length+" stop"+(Object.keys(st.pos).length>1?"s":""));
+  agent("logger",`${st.trades.length} trades · ${wins} gagnants · frais ${eur.format(st.fees)}`,st.trades.length);
+  for(const e of r.ev){
+    const col=e.kind==="buy"?"var(--accent)":e.kind==="win"?"var(--good)":"var(--bad)";
+    agent(e.a,`${e.txt} · ${e.detail}`,undefined,e.kind==="loss"?"alert":"flash");
+    logLine(r.t,e.kind==="buy"?"ACHAT":e.a==="risk"?"RISQUE":"VENTE",col,`${e.txt} · ${e.detail}`)}
+  // positions
+  const box=$("pos");box.textContent="";const keys=Object.keys(st.pos);
+  if(!keys.length){const e=document.createElement("div");e.className="empty";e.textContent=st.halted?"Bot arrêté par le coupe-circuit.":"Aucune position : le bot attend un signal.";box.appendChild(e)}
+  for(const p of keys){const ps=st.pos[p],c=S[p].c[i],g=c/ps.entry-1;const row=document.createElement("div");row.className="prow";
+    const a=document.createElement("span");a.textContent=`${p.split("-")[0]} · ${eur.format(ps.qty*c)}`;
+    const b=document.createElement("span");b.textContent=pctf(g);b.className=g>=0?"up":"down";
+    const s2=document.createElement("span");s2.style.color="var(--muted)";s2.textContent="stop "+px(ps.stop);
+    row.append(a,b,s2);box.appendChild(row)}
+  drawChart();
+}
+function drawChart(){
+  const cv=$("chart"),dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+  if(cv.width!==w*dpr||cv.height!==h*dpr){cv.width=w*dpr;cv.height=h*dpr}
+  const g=cv.getContext("2d");g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);
+  const A=E?E.curve:[],B=E?E.bhCurve:[];const total=E?Math.max(E.n-E.start,A.length,2):2;
+  const css=getComputedStyle(document.documentElement);const col=k=>css.getPropertyValue(k).trim();
+  const vals=[CFG.capital,...A,...B];let lo=Math.min(...vals),hi=Math.max(...vals);const pad=(hi-lo)*0.12||2;lo-=pad;hi+=pad;
+  const L=48,R=10,T=10,Bm=20,x=k=>L+(w-L-R)*k/(total-1),y=v=>T+(h-T-Bm)*(1-(v-lo)/(hi-lo));
+  g.font="11px "+col("--mono");g.fillStyle=col("--muted");g.strokeStyle=col("--line");g.lineWidth=1;
+  for(let k=0;k<=3;k++){const v=lo+(hi-lo)*k/3,yy=y(v);g.globalAlpha=.5;g.beginPath();g.moveTo(L,yy);g.lineTo(w-R,yy);g.stroke();g.globalAlpha=1;g.fillText(Math.round(v)+" €",4,yy+4)}
+  g.setLineDash([4,4]);g.strokeStyle=col("--muted");g.beginPath();g.moveTo(L,y(CFG.capital));g.lineTo(w-R,y(CFG.capital));g.stroke();g.setLineDash([]);
+  const line=(arr,color,fill)=>{if(arr.length<2)return;g.beginPath();arr.forEach((v,k)=>k?g.lineTo(x(k),y(v)):g.moveTo(x(k),y(v)));g.strokeStyle=color;g.lineWidth=2;g.stroke();
+    if(fill){g.lineTo(x(arr.length-1),h-Bm);g.lineTo(x(0),h-Bm);g.closePath();const gr=g.createLinearGradient(0,T,0,h-Bm);gr.addColorStop(0,color+"40");gr.addColorStop(1,color+"00");g.fillStyle=gr;g.fill()}
+    const k=arr.length-1;g.beginPath();g.arc(x(k),y(arr[k]),4,0,7);g.fillStyle=color;g.fill()};
+  line(B,col("--hold"),false);line(A,col("--accent"),true);
+  if(E&&A.length){g.fillStyle=col("--muted");g.fillText(dfmt.format(E.S[PAIRS[0]].t[E.start]),L,h-4)}
+}
+function showRecap(){
+  const st=E,eq=st.curve.at(-1),bh=st.bhCurve.at(-1),r=eq/CFG.capital-1,rb=bh/CFG.capital-1;
+  const wins=st.trades.filter(x=>x.pnl>0).length;
+  $("recap").hidden=false;
+  $("recap-h").textContent=`Bilan : bot ${pctf(r)}, acheter et garder ${pctf(rb)}`;
+  let verdict=r>rb&&r>0?"Sur cette période, le bot a gagné et a fait mieux que de simplement garder le panier.":
+    r>rb?"Le bot a perdu moins que le marché, mais il a quand même perdu de l'argent.":
+    r>0?"Le bot a gagné, mais moins que si tu avais simplement acheté et gardé.":"Le bot a perdu de l'argent et a fait moins bien que acheter et garder.";
+  $("recap-p").textContent=`${verdict} ${st.trades.length} trades, ${wins} gagnants, ${eur.format(st.fees)} de frais, pire chute ${pctf(st.maxdd)}. Une seule période ne prouve rien : valide la stratégie sur des données jamais vues avec « python bot.py validate ».`;
+  agent("logger",`fin du rejeu · ${st.trades.length} trades · frais ${eur.format(st.fees)}`,"fin","flash");
+}
+
+/* ---------- Pilotage ---------- */
+let mode="replay",timer=null,DATA=null,LIVE=null,running=false;
+function setSource(real,label){const b=$("src");b.textContent=label;b.className="badge src "+(real?"real":"fake")}
+async function loadReplay(){
+  if(DATA)return DATA;
+  setSource(false,"Chargement Coinbase…");
+  try{const raw={};for(const p of PAIRS)raw[p]=await fetchPair(p,3600,CFG.warm+720+10);
+    DATA={S:align(raw,3600),real:true};setSource(true,"Coinbase · vraies bougies 1 h")}
+  catch(e){DATA={S:synthetic(CFG.warm+720),real:false};setSource(false,"Coinbase injoignable · données synthétiques")}
+  return DATA;
+}
+async function reset(){
+  stop();$("recap").hidden=true;$("log").textContent="";buildAgents();
+  if(mode==="replay"){const d=await loadReplay();const n=d.S[PAIRS[0]].t.length;E=newState(d.S,Math.max(CFG.warm,n-720));
+    $("clock").textContent=dfmt.format(d.S[PAIRS[0]].t[E.start]);}
+  render0();
+}
+function render0(){$("eq").textContent=eur.format(CFG.capital);$("eqd").textContent="+0,00 € (0,0 %)";$("eqd").className="delta";
+  $("bh").textContent=eur.format(CFG.capital);$("s-tr").textContent="0";$("s-win").textContent="–";$("s-fee").textContent=eur.format(0);$("s-dd").textContent=pctf(0);
+  const box=$("pos");box.textContent="";const e=document.createElement("div");e.className="empty";e.textContent="Aucune position : appuie sur « Lancer ».";box.appendChild(e);drawChart()}
+function stop(){clearInterval(timer);timer=null;running=false;$("play").textContent="Lancer"}
+function play(){
+  if(running){stop();return}
+  if(mode==="live"){startLive();return}
+  if(!E||E.i>=E.n){return}
+  running=true;$("play").textContent="Pause";
+  timer=setInterval(()=>{const k=+$("speed").value;let r;for(let j=0;j<k&&E.i<E.n;j++){r=step(E);if(r.ev.length&&j<k-1){render(r)}}
+    if(r)render(r);if(E.i>=E.n){stop();showRecap()}},250);
+}
+/* Direct : bougies de 5 min, une décision par bougie clôturée, tant que la page reste ouverte */
+async function startLive(){
+  running=true;$("play").textContent="Pause";$("recap").hidden=true;
+  const tick=async()=>{
+    try{const raw={};for(const p of PAIRS)raw[p]=await fetchPair(p,300,300);const S=align(raw,300);const n=S[PAIRS[0]].t.length;
+      setSource(true,"Coinbase · direct, bougies 5 min");
+      if(!LIVE){E=newState(S,n-1);LIVE={last:S[PAIRS[0]].t[n-1]};logLine(Date.now(),"DÉPART",getComputedStyle(document.documentElement).getPropertyValue("--accent"),"le bot surveille les 6 paires, une décision toutes les 5 minutes");
+        $("clock").textContent="dernière bougie "+dfmt.format(LIVE.last);return}
+      // on garde le portefeuille, on remplace les données et on traite les nouvelles bougies clôturées
+      const old=E;old.S=S;old.n=n;let idx=S[PAIRS[0]].t.findIndex(t=>t>LIVE.last);
+      if(idx<0)return;old.i=idx;let r;while(old.i<n){r=step(old);render(r)}LIVE.last=S[PAIRS[0]].t[n-1];
+    }catch(e){setSource(false,"Coinbase injoignable : ouvre ce fichier dans ton navigateur");stop()}
+  };
+  await tick();if(running)timer=setInterval(tick,30000);
+}
+$("m-replay").onclick=()=>{mode="replay";$("m-replay").setAttribute("aria-pressed","true");$("m-live").setAttribute("aria-pressed","false");$("speed").disabled=false;LIVE=null;reset()};
+$("m-live").onclick=()=>{mode="live";$("m-live").setAttribute("aria-pressed","true");$("m-replay").setAttribute("aria-pressed","false");$("speed").disabled=true;stop();LIVE=null;E=null;$("log").textContent="";buildAgents();render0();$("clock").textContent="appuie sur « Lancer » pour démarrer";};
+$("play").onclick=play;$("reset").onclick=()=>{LIVE=null;reset()};
+$("strat").onchange=()=>{LIVE=null;reset()};
+window.addEventListener("resize",drawChart);
+buildAgents();reset();
+</script>
+</body>
+</html>

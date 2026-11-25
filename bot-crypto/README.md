@@ -57,3 +57,16 @@ botcrypto/broker.py       PaperBroker (simulation) et CoinbaseBroker (réel)
 botcrypto/live.py         la boucle du bot en direct
 tests/                    python -m pytest
 ```
+
+## Le desk à 6 agents (`desk.html`)
+
+Ouvre `desk.html` dans ton navigateur (double-clic). Il récupère les vraies bougies Coinbase et montre le bot
+au travail, avec 6 agents : Scout (données), Filtre (tendance), Analyste (signal), Risque (protection),
+Exécution (ordres) et Journal (suivi).
+
+- **Rejouer 30 jours** : rejoue les 30 derniers jours en accéléré, sur 6 paires en euros, et compare le résultat à « acheter et garder » le même panier.
+- **Direct** : une décision toutes les 5 minutes sur les vraies bougies, tant que la page reste ouverte.
+
+C'est toujours une **simulation** : aucun ordre réel n'est passé, et le badge le dit à l'écran.
+Si Coinbase est injoignable, la page bascule sur des données synthétiques, et le badge l'indique en rouge.
+Les règles sont les mêmes que celles du bot Python (frais, stop ATR, 2 % de risque, coupe-circuit).
