@@ -6,3 +6,5 @@ __pycache__/
 *.pyc
 export/
 export_donnees.zip
+data/metaquotes/*
+!data/metaquotes/XAUUSD_M5.csv
