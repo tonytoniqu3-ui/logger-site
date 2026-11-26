@@ -113,3 +113,13 @@ def test_releve(tmp_path):
     fx, rb, j = faire_tourner(tmp_path, 8000, 14000)
     txt = releve.releve(releve.lire_journal(tmp_path / "journal" / "journal.csv"))
     assert "Semaine" in txt and "R moyen" in txt
+
+
+def test_export(tmp_path):
+    import exporter_donnees as ex
+    fx = FauxMT5(D, 5000)
+    fx.copy_rates_range = lambda s, tf, a, b: fx.copy_rates_from_pos(s, tf, 0, 3000)
+    bilan = ex.exporter(fx, tmp_path, symboles=["XAUUSD", "INCONNU"])
+    assert bilan[0][1] == 3000 and "absent" in bilan[1][2]
+    out = pd.read_csv(tmp_path / "XAUUSD_M5.csv")
+    assert list(out.columns) == ["date", "open", "high", "low", "close", "tick_volume", "spread"]

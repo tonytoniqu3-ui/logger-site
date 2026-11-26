@@ -4,3 +4,5 @@ journal/
 PAUSE.flag
 __pycache__/
 *.pyc
+export/
+export_donnees.zip

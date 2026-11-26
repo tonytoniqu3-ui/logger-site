@@ -56,6 +56,7 @@ risque déjà 15 à 25 € selon la largeur de la séance. Si une séance est tr
 | `4-demarrage-automatique.bat` | Le robot redémarre seul à chaque ouverture de session (tape `O`) |
 | `5-releve-semaine.bat` | **Chaque week-end** : le résultat de la semaine et depuis le début. Envoie-le-moi |
 | `6-pause-marche.bat` | Mettre le robot en pause, ou le relancer |
+| `7-exporter-donnees.bat` | Exporter l'historique M5 de l'or, de l'argent et des indices pour la recherche (aucun ordre) |
 
 Mets aussi MetaTrader 5 dans le démarrage automatique de Windows : touche Windows + R, tape `shell:startup`,
 puis glisse un raccourci de MT5 dans le dossier qui s'ouvre.

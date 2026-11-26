@@ -45,6 +45,9 @@ class FauxMT5:
     def symbol_select(self, name, on=True):
         return name == "XAUUSD"
 
+    def account_info_server(self):
+        return "Faux-Demo"
+
     def symbol_info(self, name):
         if name != "XAUUSD":
             return None
