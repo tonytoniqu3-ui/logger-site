@@ -1,0 +1,17 @@
+{
+  "symbole": "XAUUSD",
+  "risque": 0.03,
+  "risque_max": 0.05,
+  "perte_max_jour": 0.10,
+  "perte_max_semaine": 0.10,
+  "objectif_semaine": 0.05,
+  "historique_bougies": 5000,
+  "pause_secondes": 5,
+  "strategie": {
+    "sessions": [["Asie", "01:00", "03:00"], ["New York", "10:00", "15:00"]],
+    "fermeture": "21:00",
+    "rr": 2.0,
+    "tendance": true,
+    "retard_max": 0.35
+  }
+}

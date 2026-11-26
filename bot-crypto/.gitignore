@@ -1,0 +1,9 @@
+.env
+data/*.csv
+state/
+__pycache__/
+*.pyc
+bot.log
+cdp_api_key.json
+*.json.bak
+.venv/
