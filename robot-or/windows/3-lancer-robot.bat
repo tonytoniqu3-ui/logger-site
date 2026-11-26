@@ -2,8 +2,7 @@
 chcp 65001 >nul
 title Robot or - COMPTE DEMO
 cd /d "%~dp0.."
-call .venv\Scripts\activate.bat
-set PYTHONUTF8=1
+call "%~dp0_preparer.bat" || exit /b 1
 :boucle
 echo [%date% %time%] Demarrage du robot or (compte DEMO). Ferme cette fenetre pour l'arreter.
 python lancer_robot.py
